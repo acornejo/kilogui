@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
             if (ftdi_write_data(ftdic, cmd, strlen(cmd)) != strlen(cmd))
                 error(ftdic);
             ftdi_usb_close(ftdic);
-            printf("Command \"%s\" send successfuly!\n", cmd);
+            printf("Command \"%s\" send successfuly!\n", argv[1]);
         } else {
             printf("Error: Command \"%s\" not found!\n", argv[1]);
         }

@@ -8,8 +8,8 @@ This repository contains four tools:
 * kbsend: Sends commands to Kilobot controller (requires libftdi).
 * kbgui: PyGTK front-end for the previous three programs.
 
-Dependencies
-------------
+Installing Dependencies
+-----------------------
 
 ### avrdude
 
@@ -73,14 +73,13 @@ console and execute the following:
     cp libftdi-0.18_mingw32/lib/* /usr/lib
     cp libftdi-0.18_mingw32/include/* /usr/include
 
-Compile and Install
--------------------
+Installing Kilobots Toolchain
+-----------------------------
 
 Once you have installed all the dependencies, you can compile and
 install the tools by executing the following commands in a terminal (in
 windows, you should use an MSYS terminal):
 
-    make
     make install
 
 [winavr]:http://sourceforge.net/projects/winavr
