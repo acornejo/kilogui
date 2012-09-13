@@ -1,5 +1,5 @@
 /**
- * Usage: kmerge {control.hex} {program.hex} {output.hex}
+ * Usage: kbmerge {control.hex} {program.hex} {output.hex}
  *
  * Merges {control.hex} and {program.hex} and stores the output in
  * {output.hex}. It is almost a direct concatenation, except that the
@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
         fclose(output);
 
     } else {
-        printf("Usage: kmerge {control.hex} {program.hex} {output.hex}\n");
+        printf("Usage: kbmerge {control.hex} {program.hex} {output.hex}\n");
         return 0;
     }
 }

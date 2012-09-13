@@ -56,13 +56,13 @@ class KilobotsGUI:
         bbox1.set_spacing(gtk.BUTTONBOX_SPREAD)
         for cmd in KILO_COMMANDS[0:split]:
             button = gtk.Button(cmd)
-            button.connect('clicked', self.ksend, cmd)
+            button.connect('clicked', self.kbsend, cmd)
             bbox1.add(button)
         bbox2 = gtk.VButtonBox()
         bbox2.set_spacing(gtk.BUTTONBOX_SPREAD)
         for cmd in KILO_COMMANDS[split:]:
             button = gtk.Button(cmd)
-            button.connect('clicked', self.ksend, cmd)
+            button.connect('clicked', self.kbsend, cmd)
             bbox2.add(button)
         if split*2 != len(KILO_COMMANDS):
             button = gtk.Button("")
@@ -102,14 +102,14 @@ class KilobotsGUI:
         if os.path.isfile(self.programfile) and os.path.isfile(self.controlfile):
             outfile = tempfile.mkstemp(suffix=".hex")
             try:
-                cmd = ["kmerge", self.controlfile, self.programfile, outfile[1]]
+                cmd = ["kbmerge", self.controlfile, self.programfile, outfile[1]]
                 print subprocess.check_output(cmd)
             except:
                 self.error_msg("Error calling "+" ".join(cmd))
                 os.unlink(outfile[1])
             else:
                 try:
-                    cmd = ["kprogram", outfile[1]]
+                    cmd = ["kbprogram", outfile[1]]
                     print subprocess.check_output(cmd)
                 except:
                     self.error_msg("Error calling "+" ".join(cmd))
@@ -118,9 +118,9 @@ class KilobotsGUI:
             self.error_msg("Error when opening "+self.controlfile+" and "+self.programfile);
 
 
-    def ksend(self, widget, message):
+    def kbsend(self, widget, message):
         try:
-            cmd = ["ksend",message]
+            cmd = ["kbsend",message]
             print subprocess.check_output(cmd)
         except:
             self.error_msg("Error calling "+ " ".join(cmd))

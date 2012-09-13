@@ -1,5 +1,5 @@
 /**
- * Usage: ksend {command}
+ * Usage: kbsend {command}
  *
  * Uses libftdi to send {command} to the KiloBot overhead controller.
  *
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
         }
     }
     else {
-        printf("Usage: ksend {command}\n");
+        printf("Usage: kbsend {command}\n");
         printf("  The following commands are available:\n");
         for (i=0; i<NUM_KILO_COMMANDS; i++) {
             printf("       %s\n", KILO_COMMANDS[i].name);

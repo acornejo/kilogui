@@ -1,5 +1,5 @@
 #!/bin/bash
-# Usage: kprogram {file.hex}
+# Usage: kbprogram {file.hex}
 #
 # Wrapper around avrdude
 #
@@ -18,5 +18,5 @@ if [ $# -eq 1 ]; then
         echo "Input file \"$1\" is not available for reading."
     fi
 else
-    echo "Usage: kprogram {file.hex}"
+    echo "Usage: kbprogram {file.hex}"
 fi

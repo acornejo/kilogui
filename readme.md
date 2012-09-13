@@ -3,10 +3,10 @@ Kilobots Toolchain
 
 This repository contains four tools:
 
-* kprogram: Wrapper for avrdude for flashing Kilobot controller.
-* kmerge: Merges a controller and a program file into a single Kilobot controller file.
-* ksend: Sends commands to Kilobot controller (requires libftdi).
-* kgui: PyGTK front-end for the previous three programs.
+* kbprogram: Wrapper for avrdude for flashing Kilobot controller.
+* kbmerge: Merges a controller and a program file into a single Kilobot controller file.
+* kbsend: Sends commands to Kilobot controller (requires libftdi).
+* kbgui: PyGTK front-end for the previous three programs.
 
 Dependencies
 ------------
@@ -14,7 +14,7 @@ Dependencies
 ### avrdude
 
 To upload new programs to your Kilobot controller, you will need to
-install avrdude first (kprogram is nothing more than a wrapper for
+install avrdude first (kbprogram is nothing more than a wrapper for
 avrdude).
 
 If you are on linux, then a prepackaged version of avrdude should be
@@ -39,7 +39,7 @@ path). To compile your own version follow the instructions
 ### libftdi and libusb
 
 To send commands to your Kilobot controller requires communicating with
-the FTDI chip through usb. For this ksend uses libftdi and libusb, which
+the FTDI chip through usb. For this kbsend uses libftdi and libusb, which
 are available for Windows, Linux and OS X.
 
 If you are on Linux, then your distribution should provide a packaged
