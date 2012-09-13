@@ -10,7 +10,7 @@ import os
 import subprocess # checkoutput
 import tempfile # mkstemp
 
-class FileChooserButton:
+class KilobotsGUI:
     def __init__(self):
         window = gtk.Window()
         window.set_title("Kilobots Toolbox")
@@ -130,5 +130,5 @@ class FileChooserButton:
         md.run()
         md.destroy()
 
-FileChooserButton()
+KilobotsGUI()
 gtk.main()
