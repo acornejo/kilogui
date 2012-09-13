@@ -30,10 +30,10 @@ terminal:
     brew install avrdude --with-usb
 
 If you are on Windows the project
-[http://sourceforge.net/projects/winavr WinAvr] contains an executable
+[WinAVR http://sourceforge.net/projects/winavr] contains an executable
 version of avrdude (make sure to place the avrdude executable on your
 path). To compile your own version follow the instructions
-[http://tomeko.net/other/avrdude/building_avrdude.php here].
+[here http://tomeko.net/other/avrdude/building_avrdude.php].
 
 ### libftdi and libusb
 
@@ -55,7 +55,7 @@ homebrew package meneger. Execute the following commands in a terminal:
 
 
 If you are on windows, first you will need to download the
-[http://www.mingw.org/wiki/MSYS MSYS] system from MinGW. Open an MSYS
+[MSYS http://www.mingw.org/wiki/MSYS] system from MinGW. Open an MSYS
 console and execute the following:
 
     mingw-get install msys-wget msys-unzip
