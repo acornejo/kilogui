@@ -1,16 +1,17 @@
-all: kmerge ksend
+all: kbmerge kbsend
 
-kmerge: kmerge.c
-	gcc -o kmerge kmerge.c
+kbmerge: kbmerge.c
+	gcc -o kbmerge kbmerge.c
 
-ksend: ksend.c
-	gcc -o ksend ksend.c -lftdi
+kbsend: kbsend.c
+	gcc -o kbsend kbsend.c -lftdi
 
-install: ksend kmerge kprogram kgui
-	install -m 755 ksend /usr/bin
-	install -m 755 kmerge /usr/bin
-	install -m 755 kprogram /usr/bin
-	install -m 755 kgui /usr/bin
+install: kbsend kbmerge kprogram kgui
+	install -m 755 kbsend /usr/bin
+	install -m 755 kbmerge /usr/bin
+	install -m 755 kbcompile /usr/bin
+	install -m 755 kbprogram /usr/bin
+	install -m 755 kbgui /usr/bin
 
 clean:
-	rm -f ksend kmerge
+	rm -f kbsend kbmerge
