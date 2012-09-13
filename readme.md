@@ -84,5 +84,5 @@ windows, you should use an MSYS terminal):
     make install
 
 [winavr]:http://sourceforge.net/projects/winavr
-[avrdude_windwos]:http://tomeko.net/other/avrdude/building_avrdude.php
+[avrdude_windows]:http://tomeko.net/other/avrdude/building_avrdude.php
 [msys]:http://www.mingw.org/wiki/MSYS
