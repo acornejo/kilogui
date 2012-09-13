@@ -4,7 +4,7 @@ kmerge: kmerge.c
 	gcc -o kmerge kmerge.c
 
 ksend: ksend.c
-	gcc -o ksend kmerge.c -lftdi
+	gcc -o ksend ksend.c -lftdi
 
 install: ksend kmerge kprogram kgui
 	install -m 755 ksend /usr/bin
