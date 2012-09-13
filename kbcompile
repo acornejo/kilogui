@@ -1,0 +1,23 @@
+#!/bin/bash
+# Usage: kbcompile {file.hex} ${file1.c} ${file2.c ...}
+#
+# Wrapper around avr-gcc and avr-objcopy
+#
+# @author Alex Cornejo
+# @version 1.0
+
+AVRCC="avr-gcc"
+AVROC="avr-objcopy"
+MCU="atmega328p"
+CFLAGS="-gdwarf-2 -Os -Wall -std=gnu99 -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums"
+
+if [ $# -ge 2 ]; then
+    OUTPUT=$1
+    OUTPUT_ELF=${OUTPUT%.*}.elf
+    shift
+	${AVRCC} -mmcu=${MCU} ${CFLAGS} -o ${OUTPUT_ELF} $*
+    ${AVROC} -O ihex -R .eeprom ${OUTPUT_ELF} ${OUTPUT}
+    rm -f ${OUTPUT_ELF}
+else
+    echo "Usage: kbcompile {file.hex} {file1.c} {file2.c ...}"
+fi
