@@ -1,0 +1,22 @@
+#!/bin/bash
+# Usage: kprogram {file.hex}
+#
+# Wrapper around avrdude
+#
+# @author Alex Cornejo
+# @version 1.0
+
+
+if [ $# -eq 1 ]; then
+    if [ -r "$1" ]; then
+        if [ $(which avrdude) ]; then
+            avrdude -P usb -c avrispmkII -p m328 -U "flash:w:$1"
+        else
+            echo "AVRdude not found, please install first."
+        fi
+    else
+        echo "Input file \"$1\" is not available for reading."
+    fi
+else
+    echo "Usage: kprogram {file.hex}"
+fi
