@@ -63,9 +63,9 @@ to a directory accessible in your path).
 
 ### libftdi and libusb
 
-To send commands to your Kilobot Overhead Controller requires
-communicating with the FTDI chip through usb. For this kbsend uses
-libftdi and libusb.
+The kbsend program that sends commands to your Kilobot Overhead
+Controller requires communicating with the FTDI chip through usb. For
+this purpose kbsend relies on libftdi and libusb.
 
 If you are on Linux, then your distribution should provide a packaged
 version of libftdi and libusb development files. In debian-based
@@ -79,7 +79,9 @@ homebrew package meneger. Execute the following commands in a terminal:
 
     brew install libftdi
 
-If you are on windows, first you will need to download the [MSYS][msys]
+If you are on windows, the recommended installation is to download the
+ready made binaries [here][kbsend-binary]. If you want to build your own
+version first you will need to download the [MSYS][msys]
 system from MinGW. Open an MSYS console and execute the following:
 
     mingw-get install msys-wget msys-unzip
@@ -109,3 +111,4 @@ windows, you should use an MSYS terminal):
 [winavr]:http://sourceforge.net/projects/winavr
 [avrdude_windows]:http://tomeko.net/other/avrdude/building_avrdude.php
 [msys]:http://www.mingw.org/wiki/MSYS
+[kbsend-binary]:https://github.com/acornejo/kilobots-toolchain/raw/binaries/kbsend-i586-win32.zip 
