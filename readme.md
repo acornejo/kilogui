@@ -10,6 +10,8 @@ frontend.
 * kbsend: Sends commands to Kilobot Overhead Controller.
 * kbgui: PyGTK front-end for the previous three programs.
 
+[!kbgui](https://raw.github.com/acornejo/kilobots-toolchain/docs/scr.png "kbgui Screenshot")
+
 Dependencies
 ------------
 
