@@ -1,13 +1,11 @@
 #include <QtGui>
 #include <QFileDialog>
-#include <stdio.h>
 #include <ftdi.h>
-
 #include "kilowindow.h"
 
 typedef struct {
-    char *name;
-    char *cmd;
+    const char *name;
+    const char *cmd;
 } kilo_cmd_t;
 
 static kilo_cmd_t KILO_COMMANDS[] = {{"Bootload", "a"}, {"Sleep", "b"}, {"Wakeup", "c"}, {"Pause", "d"}, {"Voltage", "e"}, {"Run", "f"}, {"Charge", "g"}, {"Stop", "h"}, {"LedsToggle", "i"}, {"BootloadMsg", "j"}, {"Reset", "z"}};
@@ -133,7 +131,10 @@ void KiloWindow::program() {
 }
 
 void KiloWindow::programFinished(int exitCode, QProcess::ExitStatus exitStatus) {
-    printf("Programming finished\n");
+    if (exitStatus == QProcess::CrashExit) {
+        QMessageBox::critical(this, "Kilobots Toolkit", "Crash occurred when executing avrdude.");
+    }
+    printf("Programming finished with code %d\n", exitCode);
     QFile file(temp_file);
     file.remove();
 }
@@ -166,7 +167,7 @@ void KiloWindow::programError(QProcess::ProcessError error) {
 }
 
 void KiloWindow::sendCommand(int index) {
-    char *cmd = KILO_COMMANDS[index].cmd;
+    const char *cmd = KILO_COMMANDS[index].cmd;
     struct ftdi_context *ftdic = ftdi_new();
     ftdic->usb_read_timeout = 5000;
     ftdic->usb_write_timeout = 1000;
