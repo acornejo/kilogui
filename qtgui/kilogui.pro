@@ -1,6 +1,6 @@
 TEMPLATE = app
 TARGET = kilogui
-LIBS += -lftdi
+LIBS += -lftdi -lusb
 
 HEADERS += kilowindow.h
 

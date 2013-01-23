@@ -73,6 +73,52 @@ QGroupBox *KiloWindow::createCommands() {
     return box;
 }
 
+void KiloWindow::chooseControlFile() {
+    QString filename = QFileDialog::getOpenFileName(this, "Open Control File", "", "Control Hex File (*.hex)"); //launches File Selector
+    control_file = filename;
+    if (filename.isEmpty()) {
+        ((QPushButton *)sender())->setText("[select file]");
+    } else {
+        QFileInfo info(filename);
+        ((QPushButton *)sender())->setText(info.fileName());
+    }
+}
+
+void KiloWindow::chooseProgramFile() {
+    QString filename = QFileDialog::getOpenFileName(this, "Open Program File", "", "Program Hex File (*.hex)"); //launches File Selector
+    program_file = filename;
+    if (filename.isEmpty()) {
+        ((QPushButton *)sender())->setText("[select file]");
+    } else {
+        QFileInfo info(filename);
+        ((QPushButton *)sender())->setText(info.fileName());
+    }
+}
+
+
+void KiloWindow::sendCommand(int index) {
+    const char *cmd = KILO_COMMANDS[index].cmd;
+    struct ftdi_context *ftdic = ftdi_new();
+    ftdic->usb_read_timeout = 5000;
+    ftdic->usb_write_timeout = 1000;
+    if (ftdi_usb_open(ftdic, 0x0403, 0x6001) != 0) {
+        QMessageBox::critical(this, "Kilobots Toolkit", "Unable to open usb device.");
+    } else {
+        if (ftdi_set_baudrate(ftdic, 19200) != 0) {
+            QMessageBox::critical(this, "Kilobots Toolkit", ftdic->error_str);
+        } else if (ftdi_setflowctrl(ftdic, SIO_DISABLE_FLOW_CTRL) != 0) {
+            QMessageBox::critical(this, "Kilobots Toolkit", ftdic->error_str);
+        } else if (ftdi_set_line_property(ftdic, BITS_8, STOP_BIT_1, NONE) != 0) {
+            QMessageBox::critical(this, "Kilobots Toolkit", ftdic->error_str);
+        } else if (ftdi_write_data(ftdic, (unsigned char *)cmd, strlen(cmd)) != strlen(cmd)) {
+            QMessageBox::critical(this, "Kilobots Toolkit", ftdic->error_str);
+        } else {
+            printf("Command \"%s\" send successfuly!\n", cmd);
+        }
+        ftdi_usb_close(ftdic);
+    }
+}
+
 void KiloWindow::program() {
     if (control_file.isEmpty() || program_file.isEmpty()) {
          QMessageBox::critical(
@@ -108,7 +154,6 @@ void KiloWindow::program() {
             while (control.getChar(&ch)) {
                 output.putChar(ch);
             }
-
 
             temp_file = output.fileName();
             output.setAutoRemove(false);
@@ -164,49 +209,4 @@ void KiloWindow::programError(QProcess::ProcessError error) {
     QMessageBox::critical(this, "Kilobots Toolkit", errormessage);
     QFile file(temp_file);
     file.remove();
-}
-
-void KiloWindow::sendCommand(int index) {
-    const char *cmd = KILO_COMMANDS[index].cmd;
-    struct ftdi_context *ftdic = ftdi_new();
-    ftdic->usb_read_timeout = 5000;
-    ftdic->usb_write_timeout = 1000;
-    if (ftdi_usb_open(ftdic, 0x0403, 0x6001) != 0) {
-        QMessageBox::critical(this, "Kilobots Toolkit", "Unable to open usb device.");
-    } else {
-        if (ftdi_set_baudrate(ftdic, 19200) != 0) {
-            QMessageBox::critical(this, "Kilobots Toolkit", ftdic->error_str);
-        } else if (ftdi_setflowctrl(ftdic, SIO_DISABLE_FLOW_CTRL) != 0) {
-            QMessageBox::critical(this, "Kilobots Toolkit", ftdic->error_str);
-        } else if (ftdi_set_line_property(ftdic, BITS_8, STOP_BIT_1, NONE) != 0) {
-            QMessageBox::critical(this, "Kilobots Toolkit", ftdic->error_str);
-        } else if (ftdi_write_data(ftdic, (unsigned char *)cmd, strlen(cmd)) != strlen(cmd)) {
-            QMessageBox::critical(this, "Kilobots Toolkit", ftdic->error_str);
-        } else {
-            printf("Command \"%s\" send successfuly!\n", cmd);
-        }
-        ftdi_usb_close(ftdic);
-    }
-}
-
-void KiloWindow::chooseControlFile() {
-    QString filename = QFileDialog::getOpenFileName(this, "Open Control File", "", "Control Hex File (*.hex)"); //launches File Selector
-    control_file = filename;
-    if (filename.isEmpty()) {
-        ((QPushButton *)sender())->setText("[select file]");
-    } else {
-        QFileInfo info(filename);
-        ((QPushButton *)sender())->setText(info.fileName());
-    }
-}
-
-void KiloWindow::chooseProgramFile() {
-    QString filename = QFileDialog::getOpenFileName(this, "Open Program File", "", "Program Hex File (*.hex)"); //launches File Selector
-    program_file = filename;
-    if (filename.isEmpty()) {
-        ((QPushButton *)sender())->setText("[select file]");
-    } else {
-        QFileInfo info(filename);
-        ((QPushButton *)sender())->setText(info.fileName());
-    }
 }
