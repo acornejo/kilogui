@@ -22,6 +22,7 @@ code to a hex file.
 
 Linux
 ~~~~~
+
 A prepackaged version of these programs should be available for your
 distribution. In a debian-based distribution (including ubuntu) the
 following commands will install the required programs (run as root):
