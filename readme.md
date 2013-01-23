@@ -16,75 +16,96 @@ kbcompile
 ----------
 
 This is a small bash script wrapper that allows you to compile your C
-code to a hex file.
+code to a hex file. If you are on windows, you probably want to use
+[WinAVR][winavr] instead.
+
+Usage:
+
+    kbcompile {program.hex} {source1.c} {source2.c}
+
 
 ### Dependencies: avr-gcc and avr-libc
 
-Linux
-~~~~~
-
-A prepackaged version of these programs should be available for your
-distribution. In a debian-based distribution (including ubuntu) the
+Linux: A prepackaged version of these programs should be available for
+your distribution. In a debian-based distribution (including ubuntu) the
 following commands will install the required programs (run as root):
 
     apt-get install avr-libc gcc-avr
 
-If you are on OS X, then the recommended installation method is through
-the homebrew package manager. Specifically type the following in a
-terminal:
+OS X: The recommended installation method is through the homebrew
+package manager. Specifically type the following in a terminal:
 
     brew tap larsimmisch/avr
     brew install avr-libc
     brew install avr-gcc
 
-If you are on Windows the [WinAVR][winavr] software contains binary
-versions of the required files. 
+Windows: The [WinAVR][winavr] software contains compiled versions of
+both avr-gcc and avr-libc. (make sure to add the directory containing
+the avr-gcc executalbes to your path).
 
-### avrdude
+kbprogram
+---------
 
-To upload new programs to your Kilobot controller, you will need to
-install avrdude first (kbprogram is nothing more than a wrapper for
-avrdude).
+This is a small bash script wrapper that allows you to upload a hex
+file to the Kilobot Overhead Controller. IMPORTANT: Remember that you
+should only upload a hex file which has both a program and a controller,
+see kbmerge.
 
-If you are on linux, then a prepackaged version of avrdude should be
-available for your distribution. In debian-based distributions
-(including ubuntu) execute the following command as root:
+Usage:
+
+    kbprogram {file.hex}
+
+
+### Dependencies: avrdude
+
+Linux: A prepackaged version of avrdude should be available for your
+distribution. In debian-based distributions (including ubuntu) execute
+the following command as root:
 
     apt-get install avrdude
 
-If you are on OS X, then the recommended installation method is through
-the homebrew package manager. Specifically type the following in a
-terminal:
+OS X: The recommended installation method is through the homebrew
+package manager. Specifically type the following in a terminal:
 
     brew install avrdude --with-usb
 
-If you are on Windows the project [WinAVR][winavr] contains an
-executable version of avrdude (make sure to copy the avrdude executable
-to a directory accessible in your path).
+Windows: The [WinAVR][winavr] software ontains an
+executable version of avrdude (make sure to add the directory containing
+the avrdude executable to your path).
 
 
-### libftdi and libusb
-
+kbsend
+-------
 The kbsend program that sends commands to your Kilobot Overhead
-Controller requires communicating with the FTDI chip through usb. For
-this purpose kbsend relies on libftdi and libusb.
+Controller requires communicating with the FTDI chip through usb. 
 
-If you are on Linux, then your distribution should provide a packaged
-version of libftdi and libusb development files. In debian-based
-distributions (including ubuntu) execute the following command (as
-        root):
+
+Usage:
+
+    kbsend {command}
+
+Where {command} is one of the following
+
+    Bootload, Sleep, Wakeup, Pause, Voltage, Run, Charge, Stop,
+    LedsToggle, BootloadMsg, Reset
+
+### Dependencies: libftdi and libusb
+
+Linux: A packaged version of libftdi and libusb should be available for
+your distribution. In debian-based distributions (including ubuntu)
+execute the following command (as root):
 
     apt-get install libftdi-dev libusb-dev
 
-If you are on OS X, the recommended installation method is through the
+OS X: The recommended installation method is through the
 homebrew package meneger. Execute the following commands in a terminal:
 
     brew install libftdi
 
-If you are on windows, the recommended installation is to download the
-ready made binaries [here][kbsend-binary]. If you want to build your own
-version first you will need to download the [MSYS][msys]
-system from MinGW. Open an MSYS console and execute the following:
+Windows : There are ready made binaries [here][kbsend-binary]. If you
+want to build your own version first you will need to download the
+[MSYS][msys] system from MinGW. Open an MSYS console and execute the
+following:
 
     mingw-get install msys-wget msys-unzip
 
@@ -100,15 +121,17 @@ system from MinGW. Open an MSYS console and execute the following:
     cp libftdi-0.18_mingw32/lib/* /usr/lib
     cp libftdi-0.18_mingw32/include/* /usr/include
 
-Compile and Install
--------------------
+kbmerge
+--------
+The kbmerge program merges together the Kilobot controller file, and
+your kilobot program. This step is required before using kbprogram to
+upload the resulting hex file to the kilobots.
 
-Once you have installed all the dependencies, you can compile and
-install the tools by executing the following commands in a terminal (in
-windows, you should use an MSYS terminal):
+Usage:
 
-    make
-    make install
+    kbmerge {control.hex} {program.hex} {output.hex}
+
+### Dependencies: None
 
 [winavr]:http://sourceforge.net/projects/winavr
 [avrdude_windows]:http://tomeko.net/other/avrdude/building_avrdude.php
