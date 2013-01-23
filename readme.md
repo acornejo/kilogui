@@ -12,18 +12,19 @@ frontend.
 
 ![kbgui](https://raw.github.com/acornejo/kilobots-toolchain/docs/scr.png "kbgui Screenshot")
 
-Dependencies
-------------
+kbcompile
+----------
 
-### avr-gcc and avr-libc
+This is a small bash script wrapper that allows you to compile your C
+code to a hex file.
 
-To compile your C code to a hex file you need to install avr-gcc and
-avr-libc. 
+### Dependencies: avr-gcc and avr-libc
 
-If you are on linux, then a prepackaged version of these prorgams should
-be available for your distribution. In a debian-based distribution
-(including ubuntu) the following commands will install the required
-programs (run as root):
+Linux
+~~~~~
+A prepackaged version of these programs should be available for your
+distribution. In a debian-based distribution (including ubuntu) the
+following commands will install the required programs (run as root):
 
     apt-get install avr-libc gcc-avr
 
