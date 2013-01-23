@@ -4,13 +4,39 @@ Kilobots Toolchain
 This repository contains four command line tools and a graphical
 frontend.
 
+* kilogui: Graphical frontend to program and send commands to the Kilobots.
 * kbcompile: Compile your C code to a hex file.
 * kbmerge: Merge controller and program hex files to a single Overhead Controller hex file.
 * kbprogram: Upload hex file to Kilobot Overhead Controller.
 * kbsend: Sends commands to Kilobot Overhead Controller.
-* kbgui: PyGTK front-end for the previous three programs.
 
 ![kbgui](https://raw.github.com/acornejo/kilobots-toolchain/docs/scr.png "kbgui Screenshot")
+
+kilogui
+-------
+Graphical front-end to program the kilobot overhead controller (handles
+merging of control and program file), and sending commands to
+the kilobots through the overhead controller.
+
+Win32 binaries available [here][kbsend-binary].
+
+### Dependencies: avrdude (for programming)
+
+Linux: A prepackaged version of avrdude should be available for your
+distribution. In debian-based distributions (including ubuntu) execute
+the following command as root:
+
+    apt-get install avrdude
+
+OS X: The recommended installation method is through the homebrew
+package manager. Specifically type the following in a terminal:
+
+    brew install avrdude --with-usb
+
+Windows: The [WinAVR][winavr] software ontains an
+executable version of avrdude (make sure to add the directory containing
+the avrdude executable to your path).
+
 
 kbcompile
 ----------
@@ -137,3 +163,4 @@ Usage:
 [avrdude_windows]:http://tomeko.net/other/avrdude/building_avrdude.php
 [msys]:http://www.mingw.org/wiki/MSYS
 [kbsend-binary]:https://github.com/acornejo/kilobots-toolchain/raw/binaries/kbsend-i586-win32.zip 
+[kilogui-binary]:https://github.com/acornejo/kilobots-toolchain/raw/binaries/kilogui-i586-win32.zip 
