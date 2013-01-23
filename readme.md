@@ -39,6 +39,13 @@ the avrdude executable to your path).
 ![kilogui-win32](https://raw.github.com/acornejo/kilobots-toolchain/docs/gui-win32.png "kilogui win32 screenshot")
 ![kilogui-linux](https://raw.github.com/acornejo/kilobots-toolchain/docs/gui-linux.png "kilogui linux screenshot")
 
+### Compiling
+
+In a terminal console do the following:
+
+    git clone https://github.com/acornejo/kilobots-toolchain.git
+    cd kilobots-toolchain
+    make 
 
 kbcompile
 ----------
