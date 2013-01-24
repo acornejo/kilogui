@@ -53,6 +53,8 @@ int main(int argc, char *argv[]) {
         fclose(program);
         fclose(output);
 
+        return 0;
+
     } else {
         printf("Usage: kbmerge {control.hex} {program.hex} {output.hex}\n");
         return 0;

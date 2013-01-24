@@ -43,8 +43,7 @@ int main(int argc, char *argv[])
             ftdic->usb_write_timeout = 1000;
             if (ftdi_usb_open(ftdic, 0x0403, 0x6001) != 0) {
                 printf("Error: Unable to open usb device\n");
-                return 0;
-                /* exit(-1); */
+                return -1;
             }
             if (ftdi_set_baudrate(ftdic, 19200) != 0)
                 error(ftdic);
@@ -58,6 +57,7 @@ int main(int argc, char *argv[])
             printf("Command \"%s\" send successfuly!\n", argv[1]);
         } else {
             printf("Error: Command \"%s\" not found!\n", argv[1]);
+            return -1;
         }
     }
     else {
