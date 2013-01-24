@@ -17,7 +17,7 @@ Graphical front-end to program the kilobot overhead controller (handles
 merging of control and program file), and sending commands to
 the kilobots through the overhead controller.
 
-Win32 binaries available [here][kbsend-binary].
+Win32 binaries available [here][kilogui-binary].
 
 ### Dependencies: avrdude (for programming)
 
