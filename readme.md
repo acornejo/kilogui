@@ -37,6 +37,7 @@ executable version of avrdude (make sure to add the directory containing
 the avrdude executable to your path).
 
 ![kilogui-win32](https://raw.github.com/acornejo/kilobots-toolchain/docs/gui-win32.png "kilogui win32 screenshot")
+![kilogui-osx](https://raw.github.com/acornejo/kilobots-toolchain/docs/gui-osx.png "kilogui osx screenshot")
 ![kilogui-linux](https://raw.github.com/acornejo/kilobots-toolchain/docs/gui-linux.png "kilogui linux screenshot")
 
 ### Compiling
