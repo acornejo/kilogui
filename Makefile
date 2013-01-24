@@ -15,7 +15,7 @@ install: kbsend kbmerge kbprogram kbgui
 	install -m 755 kbmerge /usr/bin
 	install -m 755 kbcompile /usr/bin
 	install -m 755 kbprogram /usr/bin
-	install -m 755 kbgui /usr/bin
+	install -m 755 qtgui/kilogui /usr/bin
 
 clean:
 	rm -f kbsend kbmerge
