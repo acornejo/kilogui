@@ -102,7 +102,7 @@ void KiloWindow::sendCommand(int index) {
     ftdic->usb_read_timeout = 5000;
     ftdic->usb_write_timeout = 1000;
     if (ftdi_usb_open(ftdic, 0x0403, 0x6001) != 0) {
-        QMessageBox::critical(this, "Kilobots Toolkit", "Unable to open usb device.");
+        QMessageBox::critical(this, "Kilobots Toolkit", ftdic->error_str);
     } else {
         if (ftdi_set_baudrate(ftdic, 19200) != 0) {
             QMessageBox::critical(this, "Kilobots Toolkit", ftdic->error_str);
@@ -110,13 +110,14 @@ void KiloWindow::sendCommand(int index) {
             QMessageBox::critical(this, "Kilobots Toolkit", ftdic->error_str);
         } else if (ftdi_set_line_property(ftdic, BITS_8, STOP_BIT_1, NONE) != 0) {
             QMessageBox::critical(this, "Kilobots Toolkit", ftdic->error_str);
-        } else if (ftdi_write_data(ftdic, (unsigned char *)cmd, strlen(cmd)) != strlen(cmd)) {
+        } else if (ftdi_write_data(ftdic, (unsigned char *)cmd, strlen(cmd)) - strlen(cmd) != 0) {
             QMessageBox::critical(this, "Kilobots Toolkit", ftdic->error_str);
         } else {
             printf("Command \"%s\" send successfuly!\n", cmd);
         }
         ftdi_usb_close(ftdic);
     }
+    ftdi_free(ftdic);
 }
 
 void KiloWindow::program() {
