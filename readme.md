@@ -17,8 +17,8 @@ Graphical front-end to program the kilobot overhead controller (handles
 merging of control and program file), and sending commands to
 the kilobots through the overhead controller.
 
-Binaries for Windows 32 bit [here][kilogui-binary].
-Binaries for OS X 10.8.2 [here][kilogui-binaryosx]
+* Binaries for Windows 32 bit [here][kilogui-binary].
+* Binaries for OS X 10.8.2 [here][kilogui-binaryosx]
 
 ### Dependencies: avrdude (for programming)
 
