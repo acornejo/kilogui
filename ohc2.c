@@ -1,3 +1,5 @@
+#define F_CPU 8000000
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdlib.h>
@@ -10,12 +12,12 @@
 #define LED2     2
 #define IRLED    3
 
-#define F_CRYSTAL 8000000
 #define BAUDRATE 19200 //Set baud rate
-#define UBRRVAL ((F_CRYSTAL/(BAUDRATE*16UL))-1)
+#define UBRRVAL ((F_CPU/(BAUDRATE*16UL))-1)
+
+#define NOP asm volatile("nop\n\t")
 
 void send_message(int,int,int);
-
 static volatile	int ReceivedByte;
 
 int main() {
@@ -54,7 +56,6 @@ int main() {
 	PORTB &= ~(1<<LED1);
 	PORTD &= ~(1<<LED2);
 
-
 	while(1) {
 		if(ReceivedByte!=0) {
             int message_received = ReceivedByte;
@@ -62,16 +63,17 @@ int main() {
 
             switch(message_received) {
             case 'a':
-				PORTD = (1<<LED2);
 				//send boot load message first
 				for(int i=0;i<100;i++) {
+					PORTD = (1<<LED2);
 					send_message(1,0,1);
-					_delay_ms(5);
+					_delay_ms(10);
+					PORTD &= ~(1<<LED2);
+					_delay_ms(2);
 				}
-				PORTD &= ~(1<<LED2);
 				_delay_ms(8000);
 
-				//next bootload untill uart says to stop
+				//next bootload until uart says to stop
                 while (!ReceivedByte) {
                     for(uint8_t page=0;page<220 && ReceivedByte == 0; page++) {
                         uint16_t checksum=page;
@@ -95,6 +97,15 @@ int main() {
                         PORTD &= ~(1<<LED2);
                     }
                 }
+                break;
+            case 'j':
+				while(ReceivedByte==0) {
+					PORTD = (1<<LED2);
+					send_message(1,0,1);
+					_delay_ms(10);
+					PORTD &= ~(1<<LED2);
+					_delay_ms(2);
+				}
                 break;
             case 'b':
 				for(int i=0;i<100;i++) {
@@ -150,18 +161,6 @@ int main() {
 					_delay_ms(2);
 				}
                 break;
-            case 'i':
-                PORTD ^= (1<<LED2);
-                break;
-            case 'j':
-				while(ReceivedByte==0) {
-					PORTD = (1<<LED2);
-					send_message(1,0,1);
-					_delay_ms(10);
-					PORTD &= ~(1<<LED2);
-					_delay_ms(2);
-				}
-                break;
             case 'z':
 				for(int i=0;i<100;i++) {
                     PORTD = (1<<LED2);
@@ -170,6 +169,9 @@ int main() {
 					PORTD &= ~(1<<2);
 					_delay_ms(2);
 				}
+                break;
+            case 'i':
+                PORTD ^= (1<<LED2);
                 break;
             }
 		}
@@ -181,7 +183,7 @@ int main() {
 void send_message(int a, int b, int c)
 {
 	sei();
-	DDRD |= (1<<3);
+	DDRD |= (1<<IRLED);
 	uint16_t data_out[4];
 	uint8_t data_to_send[4]={a,b,c,128};
 
@@ -189,8 +191,7 @@ void send_message(int a, int b, int c)
 	data_to_send[3]+=data_to_send[0]+data_to_send[1]+data_to_send[2];
 
 	//prepare data to send
-	for(int i=0;i<4;i++)
-	{
+	for(int i=0;i<4;i++) {
 		data_out[i]=(data_to_send[i] & (1<<0))*128 +
 				(data_to_send[i] & (1<<1))*32 +
 				(data_to_send[i] & (1<<2))*8 +
@@ -204,42 +205,41 @@ void send_message(int a, int b, int c)
 		data_out[i]++;
 	}
 
-	cli();//start critical
+    //start critical
+	cli();
 
     //send start pulse
     PORTD |= (1<<IRLED);
-    asm volatile("nop\n\t");
-    asm volatile("nop\n\t");
+    NOP;
+    NOP;
     PORTD &= ~(1<<IRLED);
 
     //wait for own signal to die down
-    for(int k=0;k<53;k++)
-        asm volatile("nop\n\t");
+    for(uint8_t k=0;k<53;k++)
+        NOP;
 
     //check for collision
-    for(int k=0;k<193;k++) {
-        if((ACSR & (1<<ACO))>0)
-            asm volatile("nop\n\t");
-        if((ACSR & (1<<ACO))>0)
-            asm volatile("nop\n\t");
+    // FIXME: We are not really using this, can we remove?
+    for(uint8_t k=0;k<193;k++) {
+        if((ACSR & (1<<ACO))>0) NOP;
+        if((ACSR & (1<<ACO))>0) NOP;
     }
 
-    for(int byte_sending=0;byte_sending<4;byte_sending++) {
-        int i=8;
+    for(uint8_t byte_sending=0;byte_sending<4;byte_sending++) {
+        uint8_t i=8;
         while(i>=0) {
             if(data_out[byte_sending] & 1) {
                 PORTD |= (1<<IRLED);
-                asm volatile("nop\n\t");
-                asm volatile("nop\n\t");
+                NOP;
+                NOP;
             } else {
                 PORTD &= ~(1<<IRLED);
-                asm volatile("nop\n\t");
-                asm volatile("nop\n\t");
+                NOP;
+                NOP;
             }
             PORTD &= ~(1<<IRLED);
-            for(int k=0;k<35;k++) {
-                asm volatile("nop\n\t");
-            }
+            for(uint8_t k=0;k<35;k++)
+                NOP;
             data_out[byte_sending]=data_out[byte_sending]>>1;
             i--;
         }
@@ -247,10 +247,11 @@ void send_message(int a, int b, int c)
 
     //ensure led is off
     PORTD &= ~(1<<IRLED);
+	DDRD &= ~(1<<IRLED);
 
     //wait for own signal to die down
-    for(int k=0;k<50;k++)
-        asm volatile("nop\n\t");
+    for(uint8_t k=0;k<50;k++)
+        NOP;
 
     ACSR |= (1<<ACI);
     sei();//end critical
