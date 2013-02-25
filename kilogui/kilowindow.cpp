@@ -25,6 +25,7 @@ KiloWindow::KiloWindow(QWidget *parent): QWidget(parent) {
 
     setLayout(vbox);
     setWindowTitle("Kilobots Toolkit");
+    setWindowIcon(QIcon(":/images/kilogui.png"));
 }
 
 QGroupBox *KiloWindow::createFileInput() {
@@ -112,8 +113,6 @@ void KiloWindow::sendCommand(int index) {
             QMessageBox::critical(this, "Kilobots Toolkit", ftdic->error_str);
         } else if (ftdi_write_data(ftdic, (unsigned char *)cmd, strlen(cmd)) - strlen(cmd) != 0) {
             QMessageBox::critical(this, "Kilobots Toolkit", ftdic->error_str);
-        } else {
-            printf("Command \"%s\" send successfuly!\n", cmd);
         }
         ftdi_usb_close(ftdic);
     }
@@ -178,9 +177,8 @@ void KiloWindow::program() {
 
 void KiloWindow::programFinished(int exitCode, QProcess::ExitStatus exitStatus) {
     if (exitStatus == QProcess::CrashExit) {
-        QMessageBox::critical(this, "Kilobots Toolkit", "Crash occurred when executing avrdude.");
+        QMessageBox::critical(this, "Kilobots Toolkit", QString("Crash occurred when executing avrdude, exit code: %d.").arg(exitCode));
     }
-    printf("Programming finished with code %d\n", exitCode);
     QFile file(temp_file);
     file.remove();
 }
