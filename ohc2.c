@@ -44,17 +44,14 @@ int main() {
 	sei(); 					//Enable global interrupts
 
 	// Use LEDs to flash power on indicator signal.
-	PORTB |= (1<<LED1);
-	PORTD |= (1<<LED2);
-    _delay_ms(200);
-	PORTB &= ~(1<<LED1);
-	PORTD &= ~(1<<LED2);
-	_delay_ms(200);
-	PORTB |= (1<<LED1);
-	PORTD |= (1<<LED2);
-    _delay_ms(200);
-	PORTB &= ~(1<<LED1);
-	PORTD &= ~(1<<LED2);
+    for (int i=0; i<10; i++) {
+        PORTB |= (1<<LED1);
+        PORTD |= (1<<LED2);
+        _delay_ms(200);
+        PORTB &= ~(1<<LED1);
+        PORTD &= ~(1<<LED2);
+        _delay_ms(200);
+    }
 
 	while(1) {
 		if(ReceivedByte!=0) {
@@ -67,9 +64,9 @@ int main() {
 				for(int i=0;i<100;i++) {
 					PORTD = (1<<LED2);
 					send_message(1,0,1);
-					_delay_ms(10);
+					_delay_ms(5);
 					PORTD &= ~(1<<LED2);
-					_delay_ms(2);
+					_delay_ms(5);
 				}
 				_delay_ms(8000);
 
@@ -102,72 +99,72 @@ int main() {
 				while(ReceivedByte==0) {
 					PORTD = (1<<LED2);
 					send_message(1,0,1);
-					_delay_ms(10);
+					_delay_ms(5);
 					PORTD &= ~(1<<LED2);
-					_delay_ms(2);
+					_delay_ms(5);
 				}
                 break;
             case 'b':
-				for(int i=0;i<100;i++) {
+				while(ReceivedByte==0) {
                     PORTD = (1<<LED2);
 					send_message(2,0,1);
-					_delay_ms(10);
+					_delay_ms(5);
 					PORTD &= ~(1<<LED2);
-					_delay_ms(2);
+					_delay_ms(5);
 				}
                 break;
             case 'c':
 				while(ReceivedByte==0) {
                     PORTD = (1<<LED2);
 					send_message(3,0,1);
-					_delay_ms(1);
+					_delay_ms(5);
 					PORTD &= ~(1<<LED2);
-					_delay_ms(1);
+					_delay_ms(5);
 				}
                 break;
             case 'd':
 				while(ReceivedByte==0) {
                     PORTD = (1<<LED2);
 					send_message(4,0,1);
-					_delay_ms(1);
+					_delay_ms(5);
 					PORTD &= ~(1<<LED2);
-					_delay_ms(1);
+					_delay_ms(5);
 				}
                 break;
             case 'e':
-				for(int i=0;i<100;i++) {
+				while(ReceivedByte==0) {
                     PORTD = (1<<LED2);
 					send_message(5,0,1);
-					_delay_ms(10);
+					_delay_ms(5);
                     PORTD &= ~(1<<LED2);
-					_delay_ms(2);
+					_delay_ms(5);
 				}
                 break;
             case 'f':
-				for(int i=0;i<100;i++) {
+				while(ReceivedByte==0) {
                     PORTD = (1<<LED2);
 					send_message(6,0,1);
-					_delay_ms(10);
+					_delay_ms(5);
 					PORTD &= ~(1<<LED2);
-					_delay_ms(1);
+					_delay_ms(5);
 				}
                 break;
             case 'g':
-				for(int i=0;i<100;i++) {
+				while(ReceivedByte==0) {
                     PORTD = (1<<LED2);
 					send_message(7,0,1);
-					_delay_ms(10);
+					_delay_ms(5);
                     PORTD &= ~(1<<LED2);
-					_delay_ms(2);
+					_delay_ms(5);
 				}
                 break;
             case 'z':
-				for(int i=0;i<100;i++) {
+				while(ReceivedByte==0) {
                     PORTD = (1<<LED2);
 					send_message(8,0,1);
-					_delay_ms(10);
-					PORTD &= ~(1<<2);
-					_delay_ms(2);
+					_delay_ms(5);
+					PORTD &= ~(1<<LED2);
+					_delay_ms(5);
 				}
                 break;
             case 'i':
@@ -185,10 +182,10 @@ void send_message(int a, int b, int c)
 	sei();
 	DDRD |= (1<<IRLED);
 	uint16_t data_out[4];
-	uint8_t data_to_send[4]={a,b,c,128};
+	uint8_t data_to_send[4]={a,b,c,0};
 
 	//prepare data checksum to send
-	data_to_send[3]+=data_to_send[0]+data_to_send[1]+data_to_send[2];
+	data_to_send[3]=128+data_to_send[0]+data_to_send[1]+data_to_send[2];
 
 	//prepare data to send
 	for(int i=0;i<4;i++) {
