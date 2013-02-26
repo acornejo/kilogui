@@ -78,13 +78,13 @@ package manager. Specifically type the following in a terminal:
 
 Windows: The [WinAVR][winavr] software contains compiled versions of
 both avr-gcc and avr-libc. (make sure to add the directory containing
-the avr-gcc executalbes to your path).
+the avr-gcc executables to your path).
 
 kbprogram
 ---------
 
 This is a small bash script wrapper that allows you to upload a hex
-file to the Kilobot Overhead Controller. IMPORTANT: Remember that you
+file to the Kilobot Overhead Controller. **IMPORTANT:** Remember that you
 should only upload a hex file which has both a program and a controller,
 see kbmerge.
 
