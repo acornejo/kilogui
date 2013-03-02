@@ -178,6 +178,8 @@ void KiloWindow::program() {
 void KiloWindow::programFinished(int exitCode, QProcess::ExitStatus exitStatus) {
     if (exitStatus == QProcess::CrashExit) {
         QMessageBox::critical(this, "Kilobots Toolkit", QString("Crash occurred when executing avrdude, exit code: %d.").arg(exitCode));
+    } else {
+        QMessageBox::information(this, "Kilobots Toolkit", "AvrDude executed successfully.");
     }
     QFile file(temp_file);
     file.remove();
