@@ -11,8 +11,10 @@ class TextWindow: public QWidget {
 
 public:
     TextWindow(QString title, QWidget *parent = 0);
-    void clear();
     void addText(QString);
+
+public slots:
+    void clear();
 
 private:
     QTextEdit *text_edit;

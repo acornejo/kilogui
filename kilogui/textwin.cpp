@@ -1,6 +1,5 @@
 #include <QtGui>
 #include <QTextEdit>
-#include <QScrollbar>
 #include "textwin.h"
 
 TextWindow::TextWindow(QString title, QWidget *parent): QWidget(parent) {
@@ -8,12 +7,17 @@ TextWindow::TextWindow(QString title, QWidget *parent): QWidget(parent) {
     text_edit->setReadOnly(true);
     text_edit->setLineWrapMode(QTextEdit::NoWrap);
 
-    QPushButton *close_button = new QPushButton("&Close");
+    QPushButton *close_button = new QPushButton("C&lose");
+    QPushButton *clear_button = new QPushButton("&Clear");
     QObject::connect(close_button, SIGNAL(clicked()), this, SLOT(close()));
+    QObject::connect(clear_button, SIGNAL(clicked()), this, SLOT(clear()));
 
     QVBoxLayout *layout = new QVBoxLayout();
+    QHBoxLayout *hbox = new QHBoxLayout();
     layout->addWidget(text_edit);
-    layout->addWidget(close_button);
+    hbox->addWidget(clear_button);
+    hbox->addWidget(close_button);
+    layout->addLayout(hbox);
     setLayout(layout);
     setWindowTitle(title);
     setWindowFlags(Qt::WindowStaysOnTopHint|Qt::Dialog);

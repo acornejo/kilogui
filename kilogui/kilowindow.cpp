@@ -37,12 +37,13 @@ KiloWindow::KiloWindow(QWidget *parent): QWidget(parent) {
     ftdic = '\0';
     QTimer *usbtimer = new QTimer();
     QObject::connect(usbtimer, SIGNAL(timeout()), this, SLOT(tryOpenUSB()));
-    tryOpenUSB();
     usbtimer->start(1000*15); // try every 15 seconds
 
     QTimer *serialTimer = new QTimer();
     QObject::connect(serialTimer, SIGNAL(timeout()), this, SLOT(updateSerial()));
     serialTimer->start(300); // try 3 times a second
+
+    tryOpenUSB();
 }
 
 void KiloWindow::serialInput() {
@@ -50,7 +51,7 @@ void KiloWindow::serialInput() {
         serial->clear();
         serial->show();
     } else {
-        QMessageBox::critical(this, "Kilobots Toolkit", "Cannot send command if disconnected from usb device.");
+        QMessageBox::critical(this, "Kilobots Toolkit", "Cannot read serial if disconnected from usb device.");
     }
 }
 
@@ -59,10 +60,7 @@ void KiloWindow::updateSerial() {
         unsigned char buf[4096];
         int num = ftdi_read_data(ftdic, buf, 4096);
         if (num > 0) {
-            QString text="";
-            for (int i = 0; i < num; i++) {
-                text += (char)buf[i];
-            }
+            QString text(QByteArray((char *)buf, num));
             serial->addText(text);
         }
     }
@@ -76,6 +74,7 @@ void KiloWindow::tryOpenUSB() {
         if (ftdi_read_chipid(ftdic, &chipid) == 0)
             return;
         else {
+            serial->close();
             ftdi_usb_close(ftdic);
             ftdi_free(ftdic);
             ftdic = '\0';
@@ -106,7 +105,7 @@ void KiloWindow::tryOpenUSB() {
                 ftdi_usb_close(ftdic);
                 ftdi_free(ftdic);
                 ftdic = '\0';
-            } 
+            }
         }
     }
 
