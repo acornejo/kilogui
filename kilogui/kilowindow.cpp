@@ -34,7 +34,7 @@ KiloWindow::KiloWindow(QWidget *parent): QWidget(parent) {
     setWindowTitle("Kilobots Toolkit");
     setWindowIcon(QIcon(":/images/kilogui.png"));
 
-    ftdic = '\0';
+    ftdic = NULL;
     QTimer *usbtimer = new QTimer();
     QObject::connect(usbtimer, SIGNAL(timeout()), this, SLOT(tryOpenUSB()));
     usbtimer->start(1000*15); // try every 15 seconds
@@ -47,7 +47,7 @@ KiloWindow::KiloWindow(QWidget *parent): QWidget(parent) {
 }
 
 void KiloWindow::serialInput() {
-    if (ftdic != '\0') {
+    if (ftdic != NULL) {
         serial->clear();
         serial->show();
     } else {
@@ -56,13 +56,16 @@ void KiloWindow::serialInput() {
 }
 
 void KiloWindow::updateSerial() {
-    if (ftdic != '\0' && serial->isVisible()) {
+    if (ftdic != NULL && serial->isVisible()) {
         unsigned char buf[4096];
-        int num = ftdi_read_data(ftdic, buf, 4096);
-        if (num > 0) {
-            QString text(QByteArray((char *)buf, num));
-            serial->addText(text);
-        }
+        int num;
+        do {
+            num = ftdi_read_data(ftdic, buf, 4096);
+            if (num > 0) {
+                QString text(QByteArray((char *)buf, num));
+                serial->addText(text);
+            }
+        } while(num > 0);
     }
 }
 
@@ -70,41 +73,41 @@ void KiloWindow::tryOpenUSB() {
     QString status_msg = "Connected.";
     unsigned int chipid;
 
-    if (ftdic != '\0') {
+    if (ftdic != NULL) {
         if (ftdi_read_chipid(ftdic, &chipid) == 0)
             return;
         else {
             serial->close();
             ftdi_usb_close(ftdic);
             ftdi_free(ftdic);
-            ftdic = '\0';
+            ftdic = NULL;
         }
     }
 
-    if (ftdic == '\0') {
+    if (ftdic == NULL) {
         ftdic = ftdi_new();
         ftdic->usb_read_timeout = 5000;
         ftdic->usb_write_timeout = 1000;
         if (ftdi_usb_open(ftdic, 0x0403, 0x6001) != 0) {
             status_msg = QString("Disconnected: %1").arg(ftdic->error_str);
             ftdi_free(ftdic);
-            ftdic = '\0';
+            ftdic = NULL;
         } else {
             if (ftdi_set_baudrate(ftdic, 19200) != 0) {
                 status_msg = QString("Disconnected: %1").arg(ftdic->error_str);
                 ftdi_usb_close(ftdic);
                 ftdi_free(ftdic);
-                ftdic = '\0';
+                ftdic = NULL;
             } else if (ftdi_setflowctrl(ftdic, SIO_DISABLE_FLOW_CTRL) != 0) {
                 status_msg = QString("Disconnected: %1").arg(ftdic->error_str);
                 ftdi_usb_close(ftdic);
                 ftdi_free(ftdic);
-                ftdic = '\0';
+                ftdic = NULL;
             } else if (ftdi_set_line_property(ftdic, BITS_8, STOP_BIT_1, NONE) != 0) {
                 status_msg = QString("Disconnected: %1").arg(ftdic->error_str);
                 ftdi_usb_close(ftdic);
                 ftdi_free(ftdic);
-                ftdic = '\0';
+                ftdic = NULL;
             }
         }
     }
@@ -185,7 +188,7 @@ void KiloWindow::chooseProgramFile() {
 
 
 void KiloWindow::sendCommand(int index) {
-    if (ftdic != '\0') {
+    if (ftdic != NULL) {
         const char *cmd = KILO_COMMANDS[index].cmd;
         if (ftdi_write_data(ftdic, (unsigned char *)cmd, strlen(cmd)) - strlen(cmd) != 0)
             QMessageBox::critical(this, "Kilobots Toolkit", ftdic->error_str);
