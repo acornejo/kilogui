@@ -37,7 +37,6 @@ KiloWindow::KiloWindow(QWidget *parent): QWidget(parent) {
     conn = new FTDIConnection();
     QThread *thread = new QThread();
 
-    /* connect(thread, SIGNAL(started()), conn, SLOT(start())); */
     connect(conn, SIGNAL(readText(QString)), serial, SLOT(addText(QString)));
     connect(conn, SIGNAL(error(QString)), this, SLOT(showError(QString)));
     connect(conn, SIGNAL(status(QString)), this, SLOT(showStatus(QString)));
@@ -137,7 +136,6 @@ void KiloWindow::chooseProgramFile() {
         ((QPushButton *)sender())->setText(info.fileName());
     }
 }
-
 
 void KiloWindow::sendCommand(int index) {
     const char *cmd = KILO_COMMANDS[index].cmd;
