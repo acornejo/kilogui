@@ -6,6 +6,6 @@ RESOURCES = kilogui.qrc
 RC_FILE = kilogui.rc
 mac:ICON = images/kilogui.icns
 
-HEADERS += kilowindow.h textwin.h
+HEADERS += kilowindow.h textwin.h ftdiconn.h
 
-SOURCES += kilowindow.cpp kilogui.cpp textwin.cpp
+SOURCES += kilowindow.cpp kilogui.cpp textwin.cpp ftdiconn.cpp

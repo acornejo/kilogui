@@ -28,11 +28,13 @@ void TextWindow::clear() {
 }
 
 void TextWindow::addText(QString text) {
-    QString curtext = text_edit->toPlainText();
-    curtext += text;
-    text_edit->setPlainText(curtext);
-    text_edit->moveCursor(QTextCursor::End);
-    text_edit->ensureCursorVisible();
+    if (this->isVisible()) {
+        QString curtext = text_edit->toPlainText();
+        curtext += text;
+        text_edit->setPlainText(curtext);
+        text_edit->moveCursor(QTextCursor::End);
+        text_edit->ensureCursorVisible();
+    }
     // QVerticalScrollbar *sb = text_edit->verticalScrollBar();
     // sb->triggerAction(QScrollBar::SliderToMaximum);
 }

@@ -34,86 +34,38 @@ KiloWindow::KiloWindow(QWidget *parent): QWidget(parent) {
     setWindowTitle("Kilobots Toolkit");
     setWindowIcon(QIcon(":/images/kilogui.png"));
 
-    ftdic = NULL;
+    conn = new FTDIConnection();
+    QThread *thread = new QThread();
+
+    /* connect(thread, SIGNAL(started()), conn, SLOT(start())); */
+    connect(conn, SIGNAL(readText(QString)), serial, SLOT(addText(QString)));
+    connect(conn, SIGNAL(error(QString)), this, SLOT(showError(QString)));
+    connect(conn, SIGNAL(status(QString)), this, SLOT(showStatus(QString)));
+    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+
+    conn->moveToThread(thread);
+    thread->start();
+    conn->tryUSBOpen();
+    conn->start();
+
     QTimer *usbtimer = new QTimer();
-    QObject::connect(usbtimer, SIGNAL(timeout()), this, SLOT(tryOpenUSB()));
+    QObject::connect(usbtimer, SIGNAL(timeout()), conn, SLOT(tryUSBOpen()));
     usbtimer->start(1000*15); // try every 15 seconds
 
-    QTimer *serialTimer = new QTimer();
-    QObject::connect(serialTimer, SIGNAL(timeout()), this, SLOT(updateSerial()));
-    serialTimer->start(300); // try 3 times a second
-
-    tryOpenUSB();
 }
-
 void KiloWindow::serialInput() {
-    if (ftdic != NULL) {
-        serial->clear();
-        serial->show();
-    } else {
-        QMessageBox::critical(this, "Kilobots Toolkit", "Cannot read serial if disconnected from usb device.");
-    }
+    serial->clear();
+    serial->show();
 }
 
-void KiloWindow::updateSerial() {
-    if (ftdic != NULL && serial->isVisible()) {
-        unsigned char buf[4096];
-        int num;
-        do {
-            num = ftdi_read_data(ftdic, buf, 4096);
-            if (num > 0) {
-                QString text(QByteArray((char *)buf, num));
-                serial->addText(text);
-            }
-        } while(num > 0);
-    }
+void KiloWindow::showError(QString str) {
+    QMessageBox::critical(this, "Kilobots Toolkit", str);
 }
 
-void KiloWindow::tryOpenUSB() {
-    QString status_msg = "Connected.";
-    unsigned int chipid;
-
-    if (ftdic != NULL) {
-        if (ftdi_read_chipid(ftdic, &chipid) == 0)
-            return;
-        else {
-            serial->close();
-            ftdi_usb_close(ftdic);
-            ftdi_free(ftdic);
-            ftdic = NULL;
-        }
-    }
-
-    if (ftdic == NULL) {
-        ftdic = ftdi_new();
-        ftdic->usb_read_timeout = 5000;
-        ftdic->usb_write_timeout = 1000;
-        if (ftdi_usb_open(ftdic, 0x0403, 0x6001) != 0) {
-            status_msg = QString("Disconnected: %1").arg(ftdic->error_str);
-            ftdi_free(ftdic);
-            ftdic = NULL;
-        } else {
-            if (ftdi_set_baudrate(ftdic, 19200) != 0) {
-                status_msg = QString("Disconnected: %1").arg(ftdic->error_str);
-                ftdi_usb_close(ftdic);
-                ftdi_free(ftdic);
-                ftdic = NULL;
-            } else if (ftdi_setflowctrl(ftdic, SIO_DISABLE_FLOW_CTRL) != 0) {
-                status_msg = QString("Disconnected: %1").arg(ftdic->error_str);
-                ftdi_usb_close(ftdic);
-                ftdi_free(ftdic);
-                ftdic = NULL;
-            } else if (ftdi_set_line_property(ftdic, BITS_8, STOP_BIT_1, NONE) != 0) {
-                status_msg = QString("Disconnected: %1").arg(ftdic->error_str);
-                ftdi_usb_close(ftdic);
-                ftdi_free(ftdic);
-                ftdic = NULL;
-            }
-        }
-    }
-
-    status->showMessage(status_msg);
+void KiloWindow::showStatus(QString str) {
+    status->showMessage(str);
 }
+
 
 QGroupBox *KiloWindow::createFileInput() {
     QGroupBox *box = new QGroupBox("Program OHC");
@@ -188,13 +140,8 @@ void KiloWindow::chooseProgramFile() {
 
 
 void KiloWindow::sendCommand(int index) {
-    if (ftdic != NULL) {
-        const char *cmd = KILO_COMMANDS[index].cmd;
-        if (ftdi_write_data(ftdic, (unsigned char *)cmd, strlen(cmd)) - strlen(cmd) != 0)
-            QMessageBox::critical(this, "Kilobots Toolkit", ftdic->error_str);
-    } else {
-        QMessageBox::critical(this, "Kilobots Toolkit", "Cannot send command if disconnected from usb device.");
-    }
+    const char *cmd = KILO_COMMANDS[index].cmd;
+    conn->sendCommand(QByteArray(cmd, strlen(cmd)));
 }
 
 void KiloWindow::program() {

@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QProcess>
 #include "textwin.h"
-#include <ftdi.h>
+#include "ftdiconn.h"
 
 class QGroupBox;
 class QStatusBar;
@@ -16,7 +16,7 @@ public:
     KiloWindow(QWidget *parent = 0);
 
 private:
-    struct ftdi_context *ftdic;
+    FTDIConnection *conn;
     QString control_file;
     QString program_file;
     QString temp_file;
@@ -26,14 +26,14 @@ private:
     QGroupBox *createCommands();
 
 private slots:
-    void tryOpenUSB();
+    void showError(QString);
+    void showStatus(QString);
     void program();
     void programError(QProcess::ProcessError);
     void programFinished(int, QProcess::ExitStatus);
     void chooseControlFile();
     void chooseProgramFile();
     void serialInput();
-    void updateSerial();
     void sendCommand(int);
 };
 
