@@ -8,9 +8,12 @@
 typedef struct {
     const char *name;
     const char *cmd;
+    int len;
 } kilo_cmd_t;
 
-static const kilo_cmd_t KILO_COMMANDS[] = {{"Bootload", "a"}, {"Sleep", "b"}, {"Wakeup", "c"}, {"Pause", "d"}, {"Voltage", "e"}, {"Run", "f"}, {"Charge", "g"}, {"Stop", "h"}, {"LedsToggle", "i"}, {"BootloadMsg", "j"}, {"Reset", "z"}};
+#ifndef NEW
+static const kilo_cmd_t KILO_COMMANDS[] = {{"Bootload", "a", 1}, {"Sleep", "b", 1}, {"Wakeup", "c", 1}, {"Pause", "d", 1}, {"Voltage", "e", 1}, {"Run", "f", 1}, {"Charge", "g", 1}, {"Stop", "h", 1}, {"LedsToggle", "i", 1}, {"BootloadMsg", "j", 1}, {"Reset", "z", 1}};
+#endif
 
 static const int NUM_KILO_COMMANDS = sizeof(KILO_COMMANDS)/sizeof(kilo_cmd_t);
 
@@ -138,8 +141,7 @@ void KiloWindow::chooseProgramFile() {
 }
 
 void KiloWindow::sendCommand(int index) {
-    const char *cmd = KILO_COMMANDS[index].cmd;
-    conn->sendCommand(QByteArray(cmd, strlen(cmd)));
+    conn->sendCommand(QByteArray(KILO_COMMANDS[index].cmd, KILO_COMMANDS[index].len));
 }
 
 void KiloWindow::program() {
