@@ -8,10 +8,8 @@ FTDIConnection::FTDIConnection(QObject *parent): QObject(parent), ftdic(NULL) {
 void FTDIConnection::start() {
     if (ftdic != NULL) {
         int num = ftdi_read_data(ftdic, buf, 4096);
-        if (num > 0) {
-            QString text(QByteArray((char *)buf, num));
-            emit readText(text);
-        }
+        if (num > 0)
+            emit readText(QByteArray((char *)buf, num));
     }
 
     QMetaObject::invokeMethod(this, "start", Qt::QueuedConnection);

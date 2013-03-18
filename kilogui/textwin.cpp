@@ -28,10 +28,9 @@ void TextWindow::clear() {
 }
 
 void TextWindow::addText(QString text) {
-    if (this->isVisible()) {
-        QString curtext = text_edit->toPlainText();
-        curtext += text;
-        text_edit->setPlainText(curtext);
+    if (isVisible()) {
+        text_edit->moveCursor(QTextCursor::End);
+        text_edit->insertPlainText(text);
         text_edit->moveCursor(QTextCursor::End);
         text_edit->ensureCursorVisible();
     }
