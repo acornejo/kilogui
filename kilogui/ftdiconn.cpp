@@ -73,7 +73,9 @@ void FTDIConnection::sendCommand(QByteArray cmd) {
 void FTDIConnection::sendProgram(QString file) {
     if (ftdic != NULL) {
         data.load(file.toStdString());
-        page_total = MAX(data.size()/PAGE_SIZE + 1, 220);
+        page_total = data.size()/PAGE_SIZE+1;
+        if (page_total > 220)
+            page_total = 220;
         page = page_total;
         if (mode != MODE_UPLOAD) {
             mode = MODE_UPLOAD;
