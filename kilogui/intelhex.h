@@ -18,7 +18,7 @@ namespace intelhex
     #define	HEX_FORMAT_INHX8M	0x01
     #define	HEX_FORMAT_INHX32	0x02
 
-    class   hex_data;
+    struct hex_data;
     typedef hex_data container;
     typedef uint32_t address_type;
     typedef uint8_t value_type;
