@@ -8,4 +8,4 @@ mac:ICON = images/kilogui.icns
 
 HEADERS += kilowindow.h textwin.h ftdiconn.h
 
-SOURCES += kilowindow.cpp kilogui.cpp textwin.cpp ftdiconn.cpp
+SOURCES += kilowindow.cpp kilogui.cpp textwin.cpp ftdiconn.cpp intelhex.cpp

@@ -2,7 +2,6 @@
 #define KILOWINDOW_H
 
 #include <QWidget>
-#include <QProcess>
 #include "textwin.h"
 #include "ftdiconn.h"
 
@@ -17,9 +16,7 @@ public:
 
 private:
     FTDIConnection *conn;
-    QString control_file;
     QString program_file;
-    QString temp_file;
     QStatusBar *status;
     TextWindow *serial;
     QGroupBox *createFileInput();
@@ -29,12 +26,9 @@ private slots:
     void showError(QString);
     void showStatus(QString);
     void program();
-    void programError(QProcess::ProcessError);
-    void programFinished(int, QProcess::ExitStatus);
-    void chooseControlFile();
     void chooseProgramFile();
     void serialInput();
-    void sendCommand(int);
+    void sendMessage(int);
 };
 
 #endif//KILOWINDOW_H
