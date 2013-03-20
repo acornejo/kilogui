@@ -9,3 +9,17 @@ enum {
     PACKET_FORWARDRAWMSG,
     PACKET_BOOTPAGE
 };
+
+typedef enum {
+    NORMAL = 0,
+    SPECIAL = 0x80,
+    BOOT = 0x80,
+    BOOTPGM_PAGE,
+    BOOTPGM_SIZE,
+    RESET,
+    SLEEP,
+    WAKEUP,
+    CHARGE,
+    VOLTAGE,
+    RUN,
+} message_type_t;
