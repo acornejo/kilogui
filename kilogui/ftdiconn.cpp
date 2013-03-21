@@ -96,7 +96,7 @@ void FTDIConnection::programLoop() {
             packet[1] = PACKET_FORWARDMSG;
             packet[2] = page_total;
             packet[11] = BOOTPGM_SIZE;
-            packet[PACKET_SIZE-1] = PACKET_HEADER^PACKET_FORWARDMSG^page_total^10;
+            packet[PACKET_SIZE-1] = PACKET_HEADER^PACKET_FORWARDMSG^page_total^BOOTPGM_SIZE;
             if (ftdi_write_data(ftdic, packet, PACKET_SIZE) != PACKET_SIZE)
                 emit error(QString(ftdic->error_str));
         } else {
