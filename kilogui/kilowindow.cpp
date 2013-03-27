@@ -24,7 +24,6 @@ static const kilo_cmd_t KILO_COMMANDS[] = {
     {"Charge", CHARGE},
     {"Voltage", VOLTAGE},
     {"Run", RUN},
-    {"ReadUID", READUID},
 };
 
 static const int NUM_KILO_COMMANDS = sizeof(KILO_COMMANDS)/sizeof(kilo_cmd_t);
