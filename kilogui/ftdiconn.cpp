@@ -11,8 +11,17 @@ enum {
 
 FTDIConnection::FTDIConnection(QObject *parent): QObject(parent), ftdic(NULL), mode(MODE_NORMAL) { }
 
-void FTDIConnection::start() {
+void FTDIConnection::read() {
     readLoop();
+}
+
+void FTDIConnection::close() {
+    if (ftdic != NULL) {
+        ftdi_usb_close(ftdic);
+        ftdi_free(ftdic);
+        ftdic = NULL;
+        emit status("Disconnected.");
+    }
 }
 
 void FTDIConnection::tryUSBOpen() {

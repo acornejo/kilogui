@@ -1,6 +1,7 @@
 #include <QtGui>
 #include <QFileDialog>
 #include <QStatusBar>
+#include <QToolButton>
 #include <ftdi.h>
 #include "kilowindow.h"
 #include "textwin.h"
@@ -34,6 +35,11 @@ KiloWindow::KiloWindow(QWidget *parent): QWidget(parent) {
     status = new QStatusBar();
     status->showMessage("Disconnected.");
     status->setSizeGripEnabled(false);
+    connect_button = new QToolButton(status);
+    status->addPermanentWidget(connect_button);
+    connect_button->setText("Connect");
+    connected = false;
+    connect(connect_button, SIGNAL(clicked()), this, SLOT(toggleConnection()));
 
     QPushButton *serial_button = new QPushButton("Serial Input");
     serial = new TextWindow("Serial Input", this);
@@ -59,13 +65,9 @@ KiloWindow::KiloWindow(QWidget *parent): QWidget(parent) {
     conn->moveToThread(thread);
     thread->start();
     conn->tryUSBOpen();
-    conn->start();
-
-    QTimer *usbtimer = new QTimer();
-    QObject::connect(usbtimer, SIGNAL(timeout()), conn, SLOT(tryUSBOpen()));
-    usbtimer->start(1000*15); // try every 15 seconds
-
+    conn->read();
 }
+
 void KiloWindow::serialInput() {
     serial->clear();
     serial->show();
@@ -77,6 +79,20 @@ void KiloWindow::showError(QString str) {
 
 void KiloWindow::showStatus(QString str) {
     status->showMessage(str);
+    if (str.startsWith("Connect")) {
+        connected = true;
+        connect_button->setText("Disconnect");
+    } else {
+        connected = false;
+        connect_button->setText("Connect");
+    }
+}
+
+void KiloWindow::toggleConnection() {
+    if (connected)
+        conn->close();
+    else
+        conn->tryUSBOpen();
 }
 
 QGroupBox *KiloWindow::createFileInput() {

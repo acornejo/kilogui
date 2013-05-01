@@ -30,7 +30,8 @@ public slots:
     void sendCommand(QByteArray);
     void sendProgram(QString);
     void tryUSBOpen();
-    void start();
+    void read();
+    void close();
 
 private slots:
     void readLoop();
