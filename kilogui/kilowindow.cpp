@@ -64,13 +64,13 @@ KiloWindow::KiloWindow(QWidget *parent): QWidget(parent) {
 
     conn->moveToThread(thread);
     thread->start();
-    conn->tryUSBOpen();
-    conn->read();
+    conn->open();
 }
 
 void KiloWindow::serialInput() {
     serial->clear();
     serial->show();
+    conn->read();
 }
 
 void KiloWindow::showError(QString str) {
@@ -92,7 +92,7 @@ void KiloWindow::toggleConnection() {
     if (connected)
         conn->close();
     else
-        conn->tryUSBOpen();
+        conn->open();
 }
 
 QGroupBox *KiloWindow::createFileInput() {

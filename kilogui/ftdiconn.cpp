@@ -5,14 +5,18 @@ static unsigned char buf[4096];
 static uint8_t packet[PACKET_SIZE];
 
 enum {
-    MODE_NORMAL,
-    MODE_UPLOAD,
+    MODE_NORMAL = 0,
+    MODE_UPLOAD = 0x01,
+    MODE_DOWNLOAD = 0x02
 };
 
 FTDIConnection::FTDIConnection(QObject *parent): QObject(parent), ftdic(NULL), mode(MODE_NORMAL) { }
 
 void FTDIConnection::read() {
-    readLoop();
+    if (!(mode&MODE_DOWNLOAD)) {
+        mode |= MODE_DOWNLOAD;
+        QMetaObject::invokeMethod(this, "readLoop", Qt::QueuedConnection);
+    }
 }
 
 void FTDIConnection::close() {
@@ -20,22 +24,20 @@ void FTDIConnection::close() {
         ftdi_usb_close(ftdic);
         ftdi_free(ftdic);
         ftdic = NULL;
+        mode = MODE_NORMAL;
         emit status("Disconnected.");
     }
 }
 
-void FTDIConnection::tryUSBOpen() {
+void FTDIConnection::open() {
     QString status_msg = "Connected.";
     unsigned int chipid;
 
     if (ftdic != NULL) {
         if (ftdi_read_chipid(ftdic, &chipid) == 0)
             return;
-        else {
-            ftdi_usb_close(ftdic);
-            ftdi_free(ftdic);
-            ftdic = NULL;
-        }
+        else
+            close();
     }
 
     if (ftdic == NULL) {
@@ -86,8 +88,8 @@ void FTDIConnection::sendProgram(QString file) {
         if (page_total > 220)
             page_total = 220;
         page = page_total;
-        if (mode != MODE_UPLOAD) {
-            mode = MODE_UPLOAD;
+        if (!(mode&MODE_UPLOAD)) {
+            mode |= MODE_UPLOAD;
             delay.start();
             QMetaObject::invokeMethod(this, "programLoop", Qt::QueuedConnection);
         }
@@ -127,7 +129,7 @@ void FTDIConnection::programLoop() {
         }
         delay.start();
     }
-    if (mode == MODE_UPLOAD) {
+    if (mode&MODE_UPLOAD) {
         QMetaObject::invokeMethod(this, "programLoop", Qt::QueuedConnection);
     }
 }
@@ -138,6 +140,7 @@ void FTDIConnection::readLoop() {
         if (num > 0)
             emit readText(QByteArray((char *)buf, num));
     }
-
-    QMetaObject::invokeMethod(this, "readLoop", Qt::QueuedConnection);
+    if (mode&MODE_DOWNLOAD) {
+        QMetaObject::invokeMethod(this, "readLoop", Qt::QueuedConnection);
+    }
 }
