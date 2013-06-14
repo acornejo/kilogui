@@ -29,8 +29,9 @@ signals:
 public slots:
     void sendCommand(QByteArray);
     void sendProgram(QString);
-    void tryUSBOpen();
-    void start();
+    void open();
+    void read();
+    void close();
 
 private slots:
     void readLoop();
