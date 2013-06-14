@@ -21,17 +21,14 @@ public:
     KiloWindow(QWidget *parent = 0);
 
 private:
-<<<<<<< HEAD
 #ifdef DIGI
     DigiConnection *conn;
 #else
-=======
-    bool connected;
->>>>>>> 8e6b6fa02dbf8d1bec7079a4649e09888e2188a5
     FTDIConnection *conn;
 #endif
+    bool connected;
     QString program_file;
-    
+
     QStatusBar *status;
     QToolButton *connect_button;
     TextWindow *serial;

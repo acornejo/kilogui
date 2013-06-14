@@ -54,13 +54,13 @@ KiloWindow::KiloWindow(QWidget *parent): QWidget(parent) {
     setWindowTitle("Kilobots Toolkit");
     setWindowIcon(QIcon(":/images/kilogui.png"));
 
+    QThread *thread = new QThread();
 #ifdef DIGI
     conn = new DigiConnection();
 #else
     conn = new FTDIConnection();
     connect(conn, SIGNAL(readText(QString)), serial, SLOT(addText(QString)));
 #endif
-    QThread *thread = new QThread();
 
     connect(conn, SIGNAL(error(QString)), this, SLOT(showError(QString)));
     connect(conn, SIGNAL(status(QString)), this, SLOT(showStatus(QString)));
@@ -68,25 +68,15 @@ KiloWindow::KiloWindow(QWidget *parent): QWidget(parent) {
 
     conn->moveToThread(thread);
     thread->start();
-<<<<<<< HEAD
-    conn->tryUSBOpen();
-#ifndef DIGI
-    conn->start();
-#endif
-
-    QTimer *usbtimer = new QTimer();
-    QObject::connect(usbtimer, SIGNAL(timeout()), conn, SLOT(tryUSBOpen()));
-    usbtimer->start(1000*15); // try every 15 seconds
-
-=======
     conn->open();
->>>>>>> 8e6b6fa02dbf8d1bec7079a4649e09888e2188a5
 }
 
 void KiloWindow::serialInput() {
     serial->clear();
     serial->show();
+#ifndef DIGI
     conn->read();
+#endif
 }
 
 void KiloWindow::showError(QString str) {

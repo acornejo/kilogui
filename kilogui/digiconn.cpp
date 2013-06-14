@@ -72,7 +72,7 @@ int usb_write_packet(struct usb_dev_handle *handle, uint8_t *data, int length) {
 
 DigiConnection::DigiConnection(QObject *parent): QObject(parent), handle(NULL), mode(MODE_NORMAL) { }
 
-void DigiConnection::tryUSBOpen() {
+void DigiConnection::open() {
     QString status_msg = "Connected.";
 
     if (handle == NULL) {
@@ -88,6 +88,15 @@ void DigiConnection::tryUSBOpen() {
     }
 
     emit status(status_msg);
+}
+
+void DigiConnection::close() {
+    if (handle != NULL) {
+        usb_close(handle);
+        handle = NULL;
+        mode = MODE_NORMAL;
+        emit status("Disconnected.");
+    }
 }
 
 void DigiConnection::sendCommand(QByteArray cmd) {

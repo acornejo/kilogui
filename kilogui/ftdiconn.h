@@ -30,8 +30,8 @@ public slots:
     void sendCommand(QByteArray);
     void sendProgram(QString);
     void open();
-    void read();
     void close();
+    void read();
 
 private slots:
     void readLoop();
