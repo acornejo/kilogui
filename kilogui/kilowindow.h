@@ -3,7 +3,12 @@
 
 #include <QWidget>
 #include "textwin.h"
+#define DIGI
+#ifdef DIGI
+#include "digiconn.h"
+#else
 #include "ftdiconn.h"
+#endif
 
 class QGroupBox;
 class QStatusBar;
@@ -15,7 +20,11 @@ public:
     KiloWindow(QWidget *parent = 0);
 
 private:
+#ifdef DIGI
+    DigiConnection *conn;
+#else
     FTDIConnection *conn;
+#endif
     QString program_file;
     QStatusBar *status;
     TextWindow *serial;
