@@ -3,14 +3,11 @@
 
 #include <QWidget>
 #include "textwin.h"
-#define DIGI
-#ifdef DIGI
 #include "digiconn.h"
-#else
 #include "ftdiconn.h"
-#endif
 
 class QGroupBox;
+class QRadioButton;
 class QToolButton;
 class QStatusBar;
 
@@ -21,12 +18,11 @@ public:
     KiloWindow(QWidget *parent = 0);
 
 private:
-#ifdef DIGI
-    DigiConnection *conn;
-#else
-    FTDIConnection *conn;
-#endif
-    bool connected;
+    DigiConnection *digi_conn;
+    FTDIConnection *ftdi_conn;
+    QString digi_status;
+    QString ftdi_status;
+    int device;
     QString program_file;
 
     QStatusBar *status;
@@ -34,11 +30,16 @@ private:
     TextWindow *serial;
     QGroupBox *createFileInput();
     QGroupBox *createCommands();
+    QGroupBox *createDeviceSelect();
+    void updateStatus();
 
 private slots:
+    void selectFTDI();
+    void selectVUSB();
     void toggleConnection();
     void showError(QString);
-    void showStatus(QString);
+    void ftdiUpdateStatus(QString);
+    void digiUpdateStatus(QString);
     void program();
     void chooseProgramFile();
     void serialInput();

@@ -39,6 +39,7 @@ struct usb_device *usb_find_device(int idVendor, int idProduct) {
 int usb_write_packet(struct usb_dev_handle *handle, uint8_t *data, int length) {
     uint8_t buffer[5]={0,0,0,0,0};
     int num;
+    int retry = 1000;
 
     for (int i=0; i<length; i+=4) {
         bool sent = false;
@@ -49,9 +50,12 @@ int usb_write_packet(struct usb_dev_handle *handle, uint8_t *data, int length) {
                     i/4,
                     data[i+0] + (data[i+1] << 8), data[i+2] + (data[i+3] << 8),
                     (char *)buffer, 4,
-                    5000);
-            if (num < 0)
-                return  -1;
+                    50);
+            if (num < 0) {
+                retry--;
+                if (!retry)
+                    return -1;
+            }
             sent = true;
             for (int j=0; j<4; j++) {
                 if (data[i+j] != buffer[j])
@@ -62,7 +66,7 @@ int usb_write_packet(struct usb_dev_handle *handle, uint8_t *data, int length) {
     num = usb_control_msg(handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
             length/4,
             0, 0,
-            (char *)buffer, 4, 5000);
+            (char *)buffer, 4, 50);
     if (num < 0)
         return -1;
     else

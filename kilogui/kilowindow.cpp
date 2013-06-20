@@ -31,6 +31,7 @@ static const int NUM_KILO_COMMANDS = sizeof(KILO_COMMANDS)/sizeof(kilo_cmd_t);
 
 
 KiloWindow::KiloWindow(QWidget *parent): QWidget(parent) {
+    device = 0;
     QVBoxLayout *vbox = new QVBoxLayout;
     status = new QStatusBar();
     status->showMessage("Disconnected.");
@@ -38,13 +39,13 @@ KiloWindow::KiloWindow(QWidget *parent): QWidget(parent) {
     connect_button = new QToolButton(status);
     status->addPermanentWidget(connect_button);
     connect_button->setText("Connect");
-    connected = false;
     connect(connect_button, SIGNAL(clicked()), this, SLOT(toggleConnection()));
 
     QPushButton *serial_button = new QPushButton("Serial Input");
     serial = new TextWindow("Serial Input", this);
     QObject::connect(serial_button, SIGNAL(clicked()), this, SLOT(serialInput()));
 
+    vbox->addWidget(createDeviceSelect());
     vbox->addWidget(createFileInput());
     vbox->addWidget(createCommands());
     vbox->addWidget(serial_button);
@@ -55,50 +56,93 @@ KiloWindow::KiloWindow(QWidget *parent): QWidget(parent) {
     setWindowIcon(QIcon(":/images/kilogui.png"));
 
     QThread *thread = new QThread();
-#ifdef DIGI
-    conn = new DigiConnection();
-#else
-    conn = new FTDIConnection();
-    connect(conn, SIGNAL(readText(QString)), serial, SLOT(addText(QString)));
-#endif
+    digi_conn = new DigiConnection();
+    ftdi_conn = new FTDIConnection();
+    connect(ftdi_conn, SIGNAL(readText(QString)), serial, SLOT(addText(QString)));
 
-    connect(conn, SIGNAL(error(QString)), this, SLOT(showError(QString)));
-    connect(conn, SIGNAL(status(QString)), this, SLOT(showStatus(QString)));
+    connect(digi_conn, SIGNAL(error(QString)), this, SLOT(showError(QString)));
+    connect(digi_conn, SIGNAL(status(QString)), this, SLOT(digiUpdateStatus(QString)));
+    connect(ftdi_conn, SIGNAL(error(QString)), this, SLOT(showError(QString)));
+    connect(ftdi_conn, SIGNAL(status(QString)), this, SLOT(ftdiUpdateStatus(QString)));
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
 
-    conn->moveToThread(thread);
+    digi_conn->moveToThread(thread);
+    ftdi_conn->moveToThread(thread);
     thread->start();
-    conn->open();
+    digi_conn->open();
+    ftdi_conn->open();
 }
 
 void KiloWindow::serialInput() {
     serial->clear();
     serial->show();
-#ifndef DIGI
-    conn->read();
-#endif
+    ftdi_conn->read();
 }
 
 void KiloWindow::showError(QString str) {
     QMessageBox::critical(this, "Kilobots Toolkit", str);
 }
 
-void KiloWindow::showStatus(QString str) {
+void KiloWindow::ftdiUpdateStatus(QString str) {
+    ftdi_status = str;
+    updateStatus();
+}
+
+void KiloWindow::digiUpdateStatus(QString str) {
+    digi_status = str;
+    updateStatus();
+}
+
+void KiloWindow::updateStatus() {
+    QString str = device == 0 ? ftdi_status : digi_status;
     status->showMessage(str);
     if (str.startsWith("Connect")) {
-        connected = true;
         connect_button->setText("Disconnect");
     } else {
-        connected = false;
         connect_button->setText("Connect");
     }
 }
 
 void KiloWindow::toggleConnection() {
-    if (connected)
-        conn->close();
-    else
-        conn->open();
+    if (device == 0) {
+        if (ftdi_status.startsWith("Connect"))
+            ftdi_conn->close();
+        else
+            ftdi_conn->open();
+    } else {
+        if (digi_status.startsWith("Connect"))
+            digi_conn->close();
+        else
+            digi_conn->open();
+    }
+}
+
+void KiloWindow::selectFTDI() {
+    device = 0;
+    updateStatus();
+}
+
+void KiloWindow::selectVUSB() {
+    device = 1;
+    updateStatus();
+}
+
+QGroupBox *KiloWindow::createDeviceSelect() {
+    QGroupBox *box = new QGroupBox("Select Device");
+    QHBoxLayout *hbox = new QHBoxLayout;
+    QRadioButton *ftdi_button = new QRadioButton("FTDI");
+    QRadioButton *digi_button = new QRadioButton("VUSB");
+
+    QObject::connect(ftdi_button, SIGNAL(clicked()), this, SLOT(selectFTDI()));
+    QObject::connect(digi_button, SIGNAL(clicked()), this, SLOT(selectVUSB()));
+
+    ftdi_button->setChecked(true);
+
+    hbox->addWidget(ftdi_button);
+    hbox->addWidget(digi_button);
+    box->setLayout(hbox);
+
+    return box;
 }
 
 QGroupBox *KiloWindow::createFileInput() {
@@ -180,7 +224,10 @@ void KiloWindow::sendMessage(int index) {
         packet[11] = type;
         packet[PACKET_SIZE-1]=PACKET_HEADER^PACKET_FORWARDMSG^type;
     }
-    conn->sendCommand(packet);
+    if (device == 0)
+        ftdi_conn->sendCommand(packet);
+    else
+        digi_conn->sendCommand(packet);
 }
 
 void KiloWindow::program() {
@@ -188,6 +235,9 @@ void KiloWindow::program() {
          QMessageBox::critical(this, "Kilobots Toolkit", "You must select a program file to upload.");
     }
     else {
-        conn->sendProgram(program_file);
+        if (device == 0)
+            ftdi_conn->sendProgram(program_file);
+        else
+            digi_conn->sendProgram(program_file);
     }
 }
