@@ -1,4 +1,4 @@
-#include "digiconn.h"
+#include "vusbconn.h"
 #include "packet.h"
 
 static uint8_t packet[PACKET_SIZE];
@@ -74,9 +74,9 @@ int usb_write_packet(struct usb_dev_handle *handle, uint8_t *data, int length) {
 
 }
 
-DigiConnection::DigiConnection(QObject *parent): QObject(parent), handle(NULL), mode(MODE_NORMAL) { }
+VUSBConnection::VUSBConnection(QObject *parent): QObject(parent), handle(NULL), mode(MODE_NORMAL) { }
 
-void DigiConnection::open() {
+void VUSBConnection::open() {
     QString status_msg = "Connected.";
 
     if (handle == NULL) {
@@ -94,7 +94,7 @@ void DigiConnection::open() {
     emit status(status_msg);
 }
 
-void DigiConnection::close() {
+void VUSBConnection::close() {
     if (handle != NULL) {
         usb_close(handle);
         handle = NULL;
@@ -103,7 +103,7 @@ void DigiConnection::close() {
     }
 }
 
-void DigiConnection::sendCommand(QByteArray cmd) {
+void VUSBConnection::sendCommand(QByteArray cmd) {
     mode = MODE_NORMAL;
     if (handle != NULL) {
         if (usb_write_packet(handle, (unsigned char *)cmd.constData(), cmd.length()) != cmd.length())
@@ -113,7 +113,7 @@ void DigiConnection::sendCommand(QByteArray cmd) {
     }
 }
 
-void DigiConnection::sendProgram(QString file) {
+void VUSBConnection::sendProgram(QString file) {
     if (handle != NULL) {
         data.load(file.toStdString());
         page_total = data.size()/PAGE_SIZE+1;
@@ -130,7 +130,7 @@ void DigiConnection::sendProgram(QString file) {
     }
 }
 
-void DigiConnection::programLoop() {
+void VUSBConnection::programLoop() {
     if (handle != NULL && delay.elapsed() > 130) {
         if (page >= page_total) {
             page = 0;

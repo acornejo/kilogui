@@ -45,22 +45,22 @@ void FTDIConnection::open() {
         ftdic->usb_read_timeout = 5000;
         ftdic->usb_write_timeout = 1000;
         if (ftdi_usb_open(ftdic, 0x0403, 0x6001) != 0) {
-            status_msg = QString("Disconnected: %1").arg(ftdic->error_str);
+            status_msg = QString("%1").arg(ftdic->error_str);
             ftdi_free(ftdic);
             ftdic = NULL;
         } else {
             if (ftdi_set_baudrate(ftdic, 76800) != 0) {
-                status_msg = QString("Disconnected: %1").arg(ftdic->error_str);
+                status_msg = QString("%1").arg(ftdic->error_str);
                 ftdi_usb_close(ftdic);
                 ftdi_free(ftdic);
                 ftdic = NULL;
             } else if (ftdi_setflowctrl(ftdic, SIO_DISABLE_FLOW_CTRL) != 0) {
-                status_msg = QString("Disconnected: %1").arg(ftdic->error_str);
+                status_msg = QString("%1").arg(ftdic->error_str);
                 ftdi_usb_close(ftdic);
                 ftdi_free(ftdic);
                 ftdic = NULL;
             } else if (ftdi_set_line_property(ftdic, BITS_8, STOP_BIT_1, NONE) != 0) {
-                status_msg = QString("Disconnected: %1").arg(ftdic->error_str);
+                status_msg = QString("%1").arg(ftdic->error_str);
                 ftdi_usb_close(ftdic);
                 ftdi_free(ftdic);
                 ftdic = NULL;

@@ -3,11 +3,10 @@
 
 #include <QWidget>
 #include "textwin.h"
-#include "digiconn.h"
+#include "vusbconn.h"
 #include "ftdiconn.h"
 
 class QGroupBox;
-class QRadioButton;
 class QToolButton;
 class QStatusBar;
 
@@ -18,9 +17,9 @@ public:
     KiloWindow(QWidget *parent = 0);
 
 private:
-    DigiConnection *digi_conn;
+    VUSBConnection *vusb_conn;
     FTDIConnection *ftdi_conn;
-    QString digi_status;
+    QString vusb_status;
     QString ftdi_status;
     int device;
     QString program_file;
@@ -39,7 +38,7 @@ private slots:
     void toggleConnection();
     void showError(QString);
     void ftdiUpdateStatus(QString);
-    void digiUpdateStatus(QString);
+    void vusbUpdateStatus(QString);
     void program();
     void chooseProgramFile();
     void serialInput();

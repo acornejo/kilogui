@@ -56,20 +56,20 @@ KiloWindow::KiloWindow(QWidget *parent): QWidget(parent) {
     setWindowIcon(QIcon(":/images/kilogui.png"));
 
     QThread *thread = new QThread();
-    digi_conn = new DigiConnection();
+    vusb_conn = new VUSBConnection();
     ftdi_conn = new FTDIConnection();
     connect(ftdi_conn, SIGNAL(readText(QString)), serial, SLOT(addText(QString)));
 
-    connect(digi_conn, SIGNAL(error(QString)), this, SLOT(showError(QString)));
-    connect(digi_conn, SIGNAL(status(QString)), this, SLOT(digiUpdateStatus(QString)));
+    connect(vusb_conn, SIGNAL(error(QString)), this, SLOT(showError(QString)));
+    connect(vusb_conn, SIGNAL(status(QString)), this, SLOT(vusbUpdateStatus(QString)));
     connect(ftdi_conn, SIGNAL(error(QString)), this, SLOT(showError(QString)));
     connect(ftdi_conn, SIGNAL(status(QString)), this, SLOT(ftdiUpdateStatus(QString)));
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
 
-    digi_conn->moveToThread(thread);
+    vusb_conn->moveToThread(thread);
     ftdi_conn->moveToThread(thread);
     thread->start();
-    digi_conn->open();
+    vusb_conn->open();
     ftdi_conn->open();
 }
 
@@ -88,13 +88,13 @@ void KiloWindow::ftdiUpdateStatus(QString str) {
     updateStatus();
 }
 
-void KiloWindow::digiUpdateStatus(QString str) {
-    digi_status = str;
+void KiloWindow::vusbUpdateStatus(QString str) {
+    vusb_status = str;
     updateStatus();
 }
 
 void KiloWindow::updateStatus() {
-    QString str = device == 0 ? ftdi_status : digi_status;
+    QString str = device == 0 ? ftdi_status : vusb_status;
     status->showMessage(str);
     if (str.startsWith("Connect")) {
         connect_button->setText("Disconnect");
@@ -110,10 +110,10 @@ void KiloWindow::toggleConnection() {
         else
             ftdi_conn->open();
     } else {
-        if (digi_status.startsWith("Connect"))
-            digi_conn->close();
+        if (vusb_status.startsWith("Connect"))
+            vusb_conn->close();
         else
-            digi_conn->open();
+            vusb_conn->open();
     }
 }
 
@@ -131,15 +131,15 @@ QGroupBox *KiloWindow::createDeviceSelect() {
     QGroupBox *box = new QGroupBox("Select Device");
     QHBoxLayout *hbox = new QHBoxLayout;
     QRadioButton *ftdi_button = new QRadioButton("FTDI");
-    QRadioButton *digi_button = new QRadioButton("VUSB");
+    QRadioButton *vusb_button = new QRadioButton("VUSB");
 
     QObject::connect(ftdi_button, SIGNAL(clicked()), this, SLOT(selectFTDI()));
-    QObject::connect(digi_button, SIGNAL(clicked()), this, SLOT(selectVUSB()));
+    QObject::connect(vusb_button, SIGNAL(clicked()), this, SLOT(selectVUSB()));
 
     ftdi_button->setChecked(true);
 
     hbox->addWidget(ftdi_button);
-    hbox->addWidget(digi_button);
+    hbox->addWidget(vusb_button);
     box->setLayout(hbox);
 
     return box;
@@ -227,7 +227,7 @@ void KiloWindow::sendMessage(int index) {
     if (device == 0)
         ftdi_conn->sendCommand(packet);
     else
-        digi_conn->sendCommand(packet);
+        vusb_conn->sendCommand(packet);
 }
 
 void KiloWindow::program() {
@@ -238,6 +238,6 @@ void KiloWindow::program() {
         if (device == 0)
             ftdi_conn->sendProgram(program_file);
         else
-            digi_conn->sendProgram(program_file);
+            vusb_conn->sendProgram(program_file);
     }
 }

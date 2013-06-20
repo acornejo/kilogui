@@ -1,5 +1,5 @@
-#ifndef __DIGICONN_H__
-#define __DIGICONN_H__
+#ifndef __VUSBCONN_H__
+#define __VUSBCONN_H__
 
 #include <usb.h>
 #include <QObject>
@@ -7,7 +7,7 @@
 #include <QTime>
 #include "intelhex.h"
 
-class DigiConnection: public QObject {
+class VUSBConnection: public QObject {
     Q_OBJECT
 
 private:
@@ -19,7 +19,7 @@ private:
     int page_total;
 
 public:
-    DigiConnection(QObject *p=0);
+    VUSBConnection(QObject *p=0);
 
 signals:
     void status(QString);
@@ -35,4 +35,4 @@ private slots:
     void programLoop();
 };
 
-#endif//__DIGICONN_H__
+#endif//__VUSBCONN_H__
