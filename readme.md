@@ -63,7 +63,8 @@ Graphical front-end to program and control the kilobots via the overhead control
 ![kilogui-linux](https://raw.github.com/acornejo/kilobots-toolchain/docs/gui-linux.png "kilogui linux screenshot")
 
 [brew]:http://brew.sh
-[winavr]:http://sourceforge.net/projects/winavr [avrdude_windows]:http://tomeko.net/other/avrdude/building_avrdude.php
+[winavr]:http://sourceforge.net/projects/winavr
+[avrdude_windows]:http://tomeko.net/other/avrdude/building_avrdude.php
 [msys]:http://www.mingw.org/wiki/MSYS
 [kbsend-binary]:https://github.com/acornejo/kilobots-toolchain/raw/binaries/kbsend-i586-win32.zip 
 [kilogui-binary]:https://github.com/acornejo/kilobots-toolchain/raw/binaries/kilogui-i586-win32.zip 
