@@ -22,11 +22,11 @@ for your distribution. In a debian-based distribution (including
 ubuntu), you can install the required commands through apt-get
 (running as root).
 
-# avr-gcc and avr-libc (for compiling)
+##### avr-gcc and avr-libc (for compiling)
 
     apt-get install avr-libc gcc-avr
 
-# avrdude (for programming)
+##### avrdude (for programming)
  
     apt-get install avrdude
 
@@ -35,13 +35,13 @@ ubuntu), you can install the required commands through apt-get
 The recommended installation method is through the [homebrew][brew]
 package manager. Specifically type the following in a terminal:
 
-# avr-gcc and avr-libc (for compiling)
+##### avr-gcc and avr-libc (for compiling)
 
     brew tap larsimmisch/avr
     brew install avr-libc
     brew install avr-gcc
 
-# avrdude (for programming)
+##### avrdude (for programming)
 
     brew install avrdude --with-usb
 
