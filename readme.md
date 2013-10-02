@@ -39,7 +39,6 @@ package manager. Specifically type the following in a terminal:
 
     brew tap larsimmisch/avr
     brew install avr-libc
-    brew install avr-gcc
 
 ##### avrdude (for programming)
 
