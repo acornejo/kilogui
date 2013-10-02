@@ -15,41 +15,40 @@ compiler. To upload your programs to the overhead controller (and to
 reprogram the bootloader for the kilobots), you will need
 avrdude.
 
-### Dependencies: avr-gcc and avr-libc (for compiling)
+### Linux
 
-Linux: A prepackaged version of these programs should be available for
-your distribution. In a debian-based distribution (including ubuntu) the
-following commands will install the required programs (run as root):
+A prepackaged version of all the relevant programs should be available
+for your distribution. In a debian-based distribution (including
+ubuntu), you can install the required commands through apt-get
+(running as root).
+
+# avr-gcc and avr-libc (for compiling)
 
     apt-get install avr-libc gcc-avr
 
-OS X: The recommended installation method is through the [homebrew][brew]
+# avrdude (for programming)
+ 
+    apt-get install avrdude
+
+### OS X
+
+The recommended installation method is through the [homebrew][brew]
 package manager. Specifically type the following in a terminal:
+
+# avr-gcc and avr-libc (for compiling)
 
     brew tap larsimmisch/avr
     brew install avr-libc
     brew install avr-gcc
 
-Windows: The [WinAVR][winavr] software contains compiled versions of
-both avr-gcc and avr-libc. (make sure to add the directory containing
-the avr-gcc executables to your path).
-
-### Dependencies: avrdude (for programming)
-
-Linux: A prepackaged version of avrdude should be available for your
-distribution. In debian-based distributions (including ubuntu) execute
-the following command as root:
-
-    apt-get install avrdude
-
-OS X: The recommended installation method is through the [homebrew][brew]
-package manager. Specifically type the following in a terminal:
+# avrdude (for programming)
 
     brew install avrdude --with-usb
 
-Windows: The [WinAVR][winavr] software ontains an
-executable version of avrdude (make sure to add the directory containing
-the avrdude executable to your path).
+### Windows
+The [WinAVR][winavr] software contains compiled versions of
+both avr-gcc, avr-libc and avrdude. Make sure to add the directory
+containing all these executables to your path.
 
 kilogui
 -------
