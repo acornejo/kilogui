@@ -49,7 +49,7 @@ void FTDIConnection::open() {
             ftdi_free(ftdic);
             ftdic = NULL;
         } else {
-            if (ftdi_set_baudrate(ftdic, 76800) != 0) {
+            if (ftdi_set_baudrate(ftdic, 38400) != 0) {
                 status_msg = QString("%1").arg(ftdic->error_str);
                 ftdi_usb_close(ftdic);
                 ftdi_free(ftdic);
