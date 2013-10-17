@@ -33,8 +33,9 @@ if [ ! -f "dmg_DS_Store" ]; then
     echo "Setup the view options of the folders, and eject the volume before continuing."
     read
     # cp $device/.DS_Store dmg_DS_Store
+    # hdiutil detach $device
 fi
-# hdiutil convert "pack.temp.dmg" -format UDZO -imagekey zlib-level=9 -o ${DMGNAME}
-hdiutil convert "pack.temp.dmg" -format UDBZ -o ${DMGNAME}
+hdiutil convert "pack.temp.dmg" -format UDZO -imagekey zlib-level=9 -o ${DMGNAME}
+# hdiutil convert "pack.temp.dmg" -format UDBZ -o ${DMGNAME}
 rm -f pack.temp.dmg
 rm -fr $DMG
