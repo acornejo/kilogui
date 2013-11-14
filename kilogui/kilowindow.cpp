@@ -17,14 +17,13 @@ typedef struct {
 
 static const kilo_cmd_t KILO_COMMANDS[] = {
     {"Stop", COMMAND_STOP},
-    {"LedToggle", COMMAND_LEDTOGGLE},
     {"Bootload", BOOT},
     {"Reset", RESET},
     {"Sleep", SLEEP},
-    {"Wakeup", WAKEUP},
-    {"Charge", CHARGE},
-    {"Voltage", VOLTAGE},
+    {"LedToggle", COMMAND_LEDTOGGLE},
+    {"Idle", WAKEUP},
     {"Run", RUN},
+    {"Voltage", VOLTAGE}
 };
 
 static const int NUM_KILO_COMMANDS = sizeof(KILO_COMMANDS)/sizeof(kilo_cmd_t);
@@ -171,7 +170,7 @@ QGroupBox *KiloWindow::createCommands() {
     QButtonGroup *group = new QButtonGroup;
     QGridLayout *layout = new QGridLayout;
 
-    int split = NUM_KILO_COMMANDS/2;
+    int split = 3;
 
     for (int i=0; i<NUM_KILO_COMMANDS; i++) {
         QPushButton *button = new QPushButton(KILO_COMMANDS[i].name);
