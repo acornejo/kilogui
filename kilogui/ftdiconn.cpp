@@ -1,6 +1,8 @@
 #include "ftdiconn.h"
 #include "packet.h"
 
+#define BAUD 38400
+
 static unsigned char buf[4096];
 static uint8_t packet[PACKET_SIZE];
 
@@ -49,7 +51,7 @@ void FTDIConnection::open() {
             ftdi_free(ftdic);
             ftdic = NULL;
         } else {
-            if (ftdi_set_baudrate(ftdic, 38400) != 0) {
+            if (ftdi_set_baudrate(ftdic, BAUD) != 0) {
                 status_msg = QString("%1").arg(ftdic->error_str);
                 ftdi_usb_close(ftdic);
                 ftdi_free(ftdic);
