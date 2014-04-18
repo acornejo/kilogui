@@ -110,8 +110,10 @@ void FTDIConnection::programLoop() {
             packet[2] = page_total;
             packet[11] = BOOTPGM_SIZE;
             packet[PACKET_SIZE-1] = PACKET_HEADER^PACKET_FORWARDMSG^page_total^BOOTPGM_SIZE;
-            if (ftdi_write_data(ftdic, packet, PACKET_SIZE) != PACKET_SIZE)
+            if (ftdi_write_data(ftdic, packet, PACKET_SIZE) != PACKET_SIZE) {
+                mode = MODE_NORMAL;
                 emit error(QString(ftdic->error_str));
+            }
         } else {
             packet[0] = PACKET_HEADER;
             packet[1] = PACKET_BOOTPAGE;
@@ -124,8 +126,10 @@ void FTDIConnection::programLoop() {
                 checksum ^= data_byte;
             }
             packet[PACKET_SIZE-1] = checksum;
-            if (ftdi_write_data(ftdic, packet, PACKET_SIZE) != PACKET_SIZE)
+            if (ftdi_write_data(ftdic, packet, PACKET_SIZE) != PACKET_SIZE) {
+                mode = MODE_NORMAL;
                 emit error(QString(ftdic->error_str));
+            }
             else
                 page++;
         }
