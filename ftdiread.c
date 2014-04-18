@@ -14,7 +14,7 @@ int main() {
         ftdi_free(ftdic);
         ftdic = NULL;
         return -1;
-    } else if (ftdi_set_baudrate(ftdic, 76800) != 0) {
+    } else if (ftdi_set_baudrate(ftdic, 38400) != 0) {
         printf("Error: %s\n", ftdic->error_str);
         ftdi_usb_close(ftdic);
         ftdi_free(ftdic);
