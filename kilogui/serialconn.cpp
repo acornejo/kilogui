@@ -120,6 +120,10 @@ void SerialConnection::open() {
 
     if (fd == -1) {
         status_msg = QString("Unable to open %1").arg(theport);
+    } else if (ioctl(fd, TIOCEXCL) == -1) {
+        status_msg = QString("Unable to get exclusive access");
+    } else if (fcntl(fd, F_SETFL, 0) == -1) {
+        status_msg = QString("Unable to restore blocking access");
     } else if (tcgetattr(fd, &toptions) < 0) { 
         status_msg = QString("Unable to get device attributes.");
     } else {
@@ -170,6 +174,7 @@ void SerialConnection::sendCommand(QByteArray cmd) {
 #else
         if (write(*((int*)context), cmd.constData(), cmd.length()) != cmd.length())
             emit error(QString("Unable to send command"));
+        tcdrain(*((int*)context));
 #endif
     } else {
         emit error("Cannot send command if disconnected from usb device.");
@@ -216,6 +221,7 @@ void SerialConnection::programLoop() {
                 mode = MODE_NORMAL;
                 emit error(QString("Unable to send packet."));
             }
+            tcdrain(*((int*)context));
 #endif
         } else {
             packet[0] = PACKET_HEADER;
@@ -234,14 +240,17 @@ void SerialConnection::programLoop() {
                 mode = MODE_NORMAL;
                 emit error(QString("Unable to send packet."));
             }
+            else
+                page++;
 #else
             if (write(*((int*)context), packet, PACKET_SIZE) != PACKET_SIZE) {
                 mode = MODE_NORMAL;
                 emit error(QString("Unable to send packet."));
             }
-#endif
             else
                 page++;
+            tcdrain(*((int*)context));
+#endif
         }
         delay.start();
     }
