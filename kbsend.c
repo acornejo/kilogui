@@ -45,13 +45,13 @@ int main(int argc, char *argv[])
                 printf("Error: Unable to open usb device\n");
                 return -1;
             }
-            if (ftdi_set_baudrate(ftdic, 19200) != 0)
+            if (ftdi_set_baudrate(ftdic, 38400) != 0)
                 error(ftdic);
             if (ftdi_setflowctrl(ftdic, SIO_DISABLE_FLOW_CTRL) != 0)
                 error(ftdic);
             if (ftdi_set_line_property(ftdic, BITS_8, STOP_BIT_1, NONE) != 0)
                 error(ftdic);
-            if (ftdi_write_data(ftdic, cmd, strlen(cmd)) != strlen(cmd))
+            if (ftdi_write_data(ftdic, cmd, 1) != 1)
                 error(ftdic);
             ftdi_usb_close(ftdic);
             printf("Command \"%s\" send successfuly!\n", argv[1]);

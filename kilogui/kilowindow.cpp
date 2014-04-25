@@ -54,22 +54,35 @@ KiloWindow::KiloWindow(QWidget *parent): QWidget(parent) {
     setWindowTitle("Kilobots Toolkit");
     setWindowIcon(QIcon(":/images/kilogui.png"));
 
+    printf("Doing enumeration!\n");
+    QVector<QString> ports = SerialConnection::enumerate();
+    printf("Found %d ports\n", ports.size());
+    for (int i = 0; i < ports.size(); i++) { 
+        printf("%s\n", ports[i].toStdString().c_str());
+    }
+    fflush(stdout);
+
     QThread *thread = new QThread();
     vusb_conn = new VUSBConnection();
     ftdi_conn = new FTDIConnection();
+    serial_conn = new SerialConnection();
     connect(ftdi_conn, SIGNAL(readText(QString)), serial, SLOT(addText(QString)));
 
     connect(vusb_conn, SIGNAL(error(QString)), this, SLOT(showError(QString)));
     connect(vusb_conn, SIGNAL(status(QString)), this, SLOT(vusbUpdateStatus(QString)));
     connect(ftdi_conn, SIGNAL(error(QString)), this, SLOT(showError(QString)));
     connect(ftdi_conn, SIGNAL(status(QString)), this, SLOT(ftdiUpdateStatus(QString)));
+    connect(serial_conn, SIGNAL(error(QString)), this, SLOT(showError(QString)));
+    connect(serial_conn, SIGNAL(status(QString)), this, SLOT(serialUpdateStatus(QString)));
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
 
     vusb_conn->moveToThread(thread);
     ftdi_conn->moveToThread(thread);
+    serial_conn->moveToThread(thread);
     thread->start();
     vusb_conn->open();
     ftdi_conn->open();
+    serial_conn->open();
 }
 
 void KiloWindow::serialInput() {
@@ -92,8 +105,13 @@ void KiloWindow::vusbUpdateStatus(QString str) {
     updateStatus();
 }
 
+void KiloWindow::serialUpdateStatus(QString str) {
+    serial_status = str;
+    updateStatus();
+}
+
 void KiloWindow::updateStatus() {
-    QString str = device == 0 ? ftdi_status : vusb_status;
+    QString str = device == 0 ? ftdi_status : (device == 1 ? vusb_status : serial_status);
     status->showMessage(str);
     if (str.startsWith("Connect")) {
         connect_button->setText("Disconnect");
@@ -108,11 +126,16 @@ void KiloWindow::toggleConnection() {
             ftdi_conn->close();
         else
             ftdi_conn->open();
-    } else {
+    } else if (device == 1) {
         if (vusb_status.startsWith("Connect"))
             vusb_conn->close();
         else
             vusb_conn->open();
+    } else {
+        if (serial_status.startsWith("Connect"))
+            serial_conn->close();
+        else
+            serial_conn->open();
     }
 }
 
@@ -126,19 +149,27 @@ void KiloWindow::selectVUSB() {
     updateStatus();
 }
 
+void KiloWindow::selectSerial() {
+    device = 2;
+    updateStatus();
+}
+
 QGroupBox *KiloWindow::createDeviceSelect() {
     QGroupBox *box = new QGroupBox("Select Device");
     QHBoxLayout *hbox = new QHBoxLayout;
     QRadioButton *ftdi_button = new QRadioButton("FTDI");
     QRadioButton *vusb_button = new QRadioButton("VUSB");
+    QRadioButton *serial_button = new QRadioButton("Serial");
 
     QObject::connect(ftdi_button, SIGNAL(clicked()), this, SLOT(selectFTDI()));
     QObject::connect(vusb_button, SIGNAL(clicked()), this, SLOT(selectVUSB()));
+    QObject::connect(serial_button, SIGNAL(clicked()), this, SLOT(selectSerial()));
 
     ftdi_button->setChecked(true);
 
     hbox->addWidget(ftdi_button);
     hbox->addWidget(vusb_button);
+    hbox->addWidget(serial_button);
     box->setLayout(hbox);
 
     return box;
@@ -225,8 +256,10 @@ void KiloWindow::sendMessage(int index) {
     }
     if (device == 0)
         ftdi_conn->sendCommand(packet);
-    else
+    else if (device == 1)
         vusb_conn->sendCommand(packet);
+    else
+        serial_conn->sendCommand(packet);
 }
 
 void KiloWindow::program() {
@@ -236,7 +269,9 @@ void KiloWindow::program() {
     else {
         if (device == 0)
             ftdi_conn->sendProgram(program_file);
-        else
+        else if (device == 1)
             vusb_conn->sendProgram(program_file);
+        else
+            serial_conn->sendProgram(program_file);
     }
 }

@@ -5,6 +5,7 @@
 #include "textwin.h"
 #include "vusbconn.h"
 #include "ftdiconn.h"
+#include "serialconn.h"
 
 class QGroupBox;
 class QToolButton;
@@ -19,8 +20,10 @@ public:
 private:
     VUSBConnection *vusb_conn;
     FTDIConnection *ftdi_conn;
+    SerialConnection *serial_conn;
     QString vusb_status;
     QString ftdi_status;
+    QString serial_status;
     int device;
     QString program_file;
 
@@ -35,8 +38,10 @@ private:
 private slots:
     void selectFTDI();
     void selectVUSB();
+    void selectSerial();
     void toggleConnection();
     void showError(QString);
+    void serialUpdateStatus(QString);
     void ftdiUpdateStatus(QString);
     void vusbUpdateStatus(QString);
     void program();
