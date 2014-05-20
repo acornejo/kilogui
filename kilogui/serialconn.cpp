@@ -2,9 +2,12 @@
 #include "packet.h"
 #include <QDir>
 
-#ifdef WINDOWS
+#ifdef _WIN32
 // based on http://playground.arduino.cc/Interfacing/CPPWindows
 #include <windows.h>
+#include <tchar.h>
+#include <stdio.h>
+#define MIN(x,y) ((x) < (y) ? (x) : (y))
 #else
 // based on https://github.com/todbot/arduino-serial
 #include <unistd.h>
@@ -27,15 +30,14 @@ SerialConnection::SerialConnection(QObject *parent, QString _portname): QObject(
 
 QVector<QString> SerialConnection::enumerate() {
     QVector<QString> ports;
-#ifdef WINDOWS
+#ifdef _WIN32
     COMMCONFIG cc;
     DWORD dwSize = sizeof(COMMCONFIG);
-    TCHAR szPort[32];
     for (size_t i=1; i<20; i++)
     {
-        _stprintf_s(szPort, _T("COM%u"), i);
-        if (GetDefaultCommConfig(szPort, &cc, &dwSize))
-            ports.push_back(i);
+        QString szPort = QString("COM%1").arg(QString::number(i));
+        if (GetDefaultCommConfig(szPort.toStdWString().c_str(), &cc, &dwSize))
+            ports.push_back(szPort);
     }
 #else
     QDir dir("/dev");
@@ -65,7 +67,7 @@ void SerialConnection::read() {
 
 void SerialConnection::close() {
     if (context != NULL) {
-#ifdef WINDOWS
+#ifdef _WIN32
         CloseHandle(*((HANDLE*)context));
         delete (HANDLE*)context;
 #else
@@ -92,8 +94,8 @@ void SerialConnection::open() {
         }
     }
 
-#ifdef WINDOWS
-    HANDLE handle = CreateFile(theport.toStdString(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+#ifdef _WIN32
+    HANDLE handle = CreateFile(theport.toStdWString().c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     DCB dcbSerialParams = {0};
 
     if (handle == INVALID_HANDLE_VALUE) {
@@ -163,13 +165,13 @@ void SerialConnection::open() {
 }
 
 void SerialConnection::sendCommand(QByteArray cmd) {
-#ifdef WINDOWS
+#ifdef _WIN32
     DWORD bytes_sent;
 #endif
     mode = MODE_NORMAL;
     if (context != NULL) {
-#ifdef WINDOWS
-        if (!WriteFile(*((HANDLE*)context), cmd.constData(), cmd.length(), &bytes_sent, 0) || bytes_sent != cmd.length()) {
+#ifdef _WIN32
+        if (!WriteFile(*((HANDLE*)context), cmd.constData(), cmd.length(), &bytes_sent, 0) || bytes_sent != (DWORD)cmd.length())
             emit error(QString("Unable to send command."));
 #else
         if (write(*((int*)context), cmd.constData(), cmd.length()) != cmd.length())
@@ -199,7 +201,7 @@ void SerialConnection::sendProgram(QString file) {
 }
 
 void SerialConnection::programLoop() {
-#ifdef WINDOWS
+#ifdef _WIN32
     DWORD bytes_sent;
 #endif
     if (context != NULL && delay.elapsed() > 130) {
@@ -211,7 +213,7 @@ void SerialConnection::programLoop() {
             packet[2] = page_total;
             packet[11] = BOOTPGM_SIZE;
             packet[PACKET_SIZE-1] = PACKET_HEADER^PACKET_FORWARDMSG^page_total^BOOTPGM_SIZE;
-#ifdef WINDOWS
+#ifdef _WIN32
             if (!WriteFile(*((HANDLE*)context), packet, PACKET_SIZE, &bytes_sent, 0) || bytes_sent != PACKET_SIZE) {
                 mode = MODE_NORMAL;
                 emit error(QString("Unable to send packet."));
@@ -235,7 +237,7 @@ void SerialConnection::programLoop() {
                 checksum ^= data_byte;
             }
             packet[PACKET_SIZE-1] = checksum;
-#ifdef WINDOWS
+#ifdef _WIN32
             if (!WriteFile(*((HANDLE*)context), packet, PACKET_SIZE, &bytes_sent, 0) || bytes_sent != PACKET_SIZE) {
                 mode = MODE_NORMAL;
                 emit error(QString("Unable to send packet."));
@@ -261,11 +263,11 @@ void SerialConnection::programLoop() {
 
 void SerialConnection::readLoop() {
     if (context != NULL) {
-#ifdef WINDOWS
+#ifdef _WIN32
         DWORD errors;
         COMSTAT status;
         ClearCommError(*((HANDLE*)context), &errors, &status);
-        int num = MIN(status.cbInQue, 4096), bytes_read;
+        DWORD num = MIN(status.cbInQue, 4096), bytes_read;
         if (num > 0 && ReadFile(*((HANDLE*)context), buf, num, &bytes_read,  NULL)) {
             emit readText(QByteArray((char *)buf, bytes_read));
         }
