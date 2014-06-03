@@ -12,6 +12,7 @@ enum {
 
 typedef enum {
     NORMAL = 0,
+    GPS,
     SPECIAL = 0x80,
     BOOT = 0x80,
     BOOTPGM_PAGE,
@@ -23,4 +24,6 @@ typedef enum {
     VOLTAGE,
     RUN,
     READUID,
+    CALIB_MOTORS,
+    CALIB_SAVE
 } message_type_t;

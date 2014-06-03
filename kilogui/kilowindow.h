@@ -6,6 +6,7 @@
 #include "vusbconn.h"
 #include "ftdiconn.h"
 #include "serialconn.h"
+#include "calibrate.h"
 
 class QGroupBox;
 class QToolButton;
@@ -30,6 +31,7 @@ private:
     QStatusBar *status;
     QToolButton *connect_button;
     TextWindow *serial;
+    CalibWindow *calib;
     QGroupBox *createFileInput();
     QGroupBox *createCommands();
     QGroupBox *createDeviceSelect();
@@ -47,7 +49,15 @@ private slots:
     void program();
     void chooseProgramFile();
     void serialInput();
+    void calibShow();
     void sendMessage(int);
+
+    void calibUID(int);
+    void calibLeft(int);
+    void calibRight(int);
+    void calibStraight(int, int);
+    void calibSave();
+    void calibStop();
 };
 
 #endif//KILOWINDOW_H

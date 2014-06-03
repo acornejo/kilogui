@@ -44,10 +44,22 @@ KiloWindow::KiloWindow(QWidget *parent): QWidget(parent) {
     serial = new TextWindow("Serial Input", this);
     QObject::connect(serial_button, SIGNAL(clicked()), this, SLOT(serialInput()));
 
+    QPushButton *calib_button = new QPushButton("Calibration Values");
+    calib = new CalibWindow("Calibration Values", this);
+    QObject::connect(calib_button, SIGNAL(clicked()), this, SLOT(calibShow()));
+
+    connect(calib, SIGNAL(calibUID(int)), this, SLOT(calibUID(int)));
+    connect(calib, SIGNAL(calibLeft(int)), this, SLOT(calibLeft(int)));
+    connect(calib, SIGNAL(calibRight(int)), this, SLOT(calibRight(int)));
+    connect(calib, SIGNAL(calibStraight(int,int)), this, SLOT(calibStraight(int)));
+    connect(calib, SIGNAL(calibStop()), this, SLOT(calibStop()));
+    connect(calib, SIGNAL(calibSave()), this, SLOT(calibSave()));
+
     vbox->addWidget(createDeviceSelect());
     vbox->addWidget(createFileInput());
     vbox->addWidget(createCommands());
     vbox->addWidget(serial_button);
+    vbox->addWidget(calib_button);
     vbox->addWidget(status);
 
     setLayout(vbox);
@@ -89,6 +101,10 @@ void KiloWindow::serialInput() {
     serial->clear();
     serial->show();
     ftdi_conn->read();
+}
+
+void KiloWindow::calibShow() {
+    calib->show();
 }
 
 void KiloWindow::showError(QString str) {
@@ -261,6 +277,19 @@ void KiloWindow::sendMessage(int index) {
     else
         serial_conn->sendCommand(packet);
 }
+
+void KiloWindow::calibStop() {
+    sendMessage(COMMAND_STOP);
+}
+
+void KiloWindow::calibSave() {
+    sendMessage(CALIB_SAVE);
+}
+
+void KiloWindow::calibUID(int x) { }
+void KiloWindow::calibLeft(int x) { }
+void KiloWindow::calibRight(int x) { }
+void KiloWindow::calibStraight(int x, int y) { }
 
 void KiloWindow::program() {
     if (program_file.isEmpty()) {
