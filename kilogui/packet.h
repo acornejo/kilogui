@@ -24,6 +24,23 @@ typedef enum {
     VOLTAGE,
     RUN,
     READUID,
-    CALIB_MOTORS,
-    CALIB_SAVE
+    CALIB
 } message_type_t;
+
+enum {
+    CALIB_SAVE,
+    CALIB_UID,
+    CALIB_TURN_LEFT,
+    CALIB_TURN_RIGHT,
+    CALIB_STRAIGHT
+};
+
+typedef  struct  __attribute__((__packed__)) {
+    uint8_t mode;
+    uint16_t uid;
+    uint8_t turn_left;
+    uint8_t turn_right;
+    uint8_t straight_left;
+    uint8_t straight_right;
+    uint16_t unused;
+} calibmsg_t;

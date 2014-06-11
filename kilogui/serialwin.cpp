@@ -1,8 +1,8 @@
 #include <QtGui>
 #include <QTextEdit>
-#include "textwin.h"
+#include "serialwin.h"
 
-TextWindow::TextWindow(QString title, QWidget *parent): QWidget(parent) {
+SerialWindow::SerialWindow(QString title, QWidget *parent): QWidget(parent) {
     text_edit = new QTextEdit();
     text_edit->setReadOnly(true);
     text_edit->setLineWrapMode(QTextEdit::NoWrap);
@@ -23,11 +23,11 @@ TextWindow::TextWindow(QString title, QWidget *parent): QWidget(parent) {
     setWindowFlags(Qt::WindowStaysOnTopHint|Qt::Dialog);
 }
 
-void TextWindow::clear() {
+void SerialWindow::clear() {
     text_edit->setPlainText("");
 }
 
-void TextWindow::addText(QString text) {
+void SerialWindow::addText(QString text) {
     if (isVisible()) {
         text_edit->moveCursor(QTextCursor::End);
         text_edit->insertPlainText(text);

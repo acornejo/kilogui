@@ -16,7 +16,7 @@ signals:
     void calibUID(int);
     void calibLeft(int);
     void calibRight(int);
-    void calibStraight(int, int);
+    void calibStraight(int);
     void calibSave();
     void calibStop();
 

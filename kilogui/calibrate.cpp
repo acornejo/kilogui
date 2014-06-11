@@ -23,19 +23,19 @@ CalibWindow::CalibWindow(QString title, QWidget *parent): QWidget(parent) {
     QSpinBox *uid_input = new QSpinBox();
     uid_input->setRange(0,2048);
     uid_input->setSingleStep(1);
-    QPushButton *uid_button = new QPushButton("Set");
+    QPushButton *uid_button = new QPushButton("Test");
 
     QLabel *turnleft_label = new QLabel("Turn left");
     QSpinBox *turnleft_input = new QSpinBox();
     turnleft_input->setRange(0,255);
     turnleft_input->setSingleStep(1);
-    QPushButton *turnleft_button = new QPushButton("Set");
+    QPushButton *turnleft_button = new QPushButton("Test");
 
     QLabel *turnright_label = new QLabel("Turn right");
     QSpinBox *turnright_input = new QSpinBox();
     turnright_input->setRange(0,255);
     turnright_input->setSingleStep(1);
-    QPushButton *turnright_button = new QPushButton("Set");
+    QPushButton *turnright_button = new QPushButton("Test");
 
     QLabel *straight_label = new QLabel("Go Straight");
     QSpinBox *straight_input1 = new QSpinBox();
@@ -47,7 +47,7 @@ CalibWindow::CalibWindow(QString title, QWidget *parent): QWidget(parent) {
     QHBoxLayout *straight_input = new QHBoxLayout();
     straight_input->addWidget(straight_input1);
     straight_input->addWidget(straight_input2);
-    QPushButton *straight_button = new QPushButton("Set");
+    QPushButton *straight_button = new QPushButton("Test");
 
     grid->addWidget(uid_label, 0, 0);
     grid->addWidget(uid_input, 0, 1);
@@ -98,7 +98,7 @@ void CalibWindow::updateCalib(int v) {
             emit calibRight(values[2]->value());
             break;
         case 3:
-            emit calibStraight(values[3]->value(), values[4]->value());
+            emit calibStraight(values[3]->value() | ((values[4]->value())&0xFF)<<8);
             break;
         default:
             break;

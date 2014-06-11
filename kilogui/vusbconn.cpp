@@ -77,17 +77,17 @@ int usb_write_packet(struct usb_dev_handle *handle, uint8_t *data, int length) {
 VUSBConnection::VUSBConnection(QObject *parent): QObject(parent), handle(NULL), mode(MODE_NORMAL) { }
 
 void VUSBConnection::open() {
-    QString status_msg = "Connected.";
+    QString status_msg = "connected.";
 
     if (handle == NULL) {
         struct usb_device *device = usb_find_device(0x16c0, 0x05df);
         if (device != NULL) {
             handle = usb_open(device);
             if (handle == NULL) {
-                status_msg = QString("Disconnected: %1").arg(usb_strerror());
+                status_msg = QString("disconnected: %1").arg(usb_strerror());
             }
         } else {
-            status_msg = QString("Device not found!");
+            status_msg = QString("device not found");
         }
     }
 
@@ -99,7 +99,7 @@ void VUSBConnection::close() {
         usb_close(handle);
         handle = NULL;
         mode = MODE_NORMAL;
-        emit status("Disconnected.");
+        emit status("disconnected.");
     }
 }
 

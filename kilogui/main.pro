@@ -6,9 +6,9 @@ RESOURCES = kilogui.qrc
 RC_FILE = kilogui.rc
 mac:ICON = images/kilogui.icns
 
-HEADERS += kilowindow.h calibrate.h textwin.h ftdiconn.h vusbconn.h serialconn.h
+HEADERS += kilowindow.h calibrate.h serialwin.h ftdiconn.h vusbconn.h serialconn.h
 
-SOURCES += kilowindow.cpp kilogui.cpp calibrate.cpp textwin.cpp ftdiconn.cpp intelhex.cpp vusbconn.cpp serialconn.cpp
+SOURCES += kilowindow.cpp kilogui.cpp calibrate.cpp serialwin.cpp ftdiconn.cpp intelhex.cpp vusbconn.cpp serialconn.cpp
 
 mystaticconfig {
     QMAKE_LIBS_QT =

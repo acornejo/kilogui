@@ -6,6 +6,7 @@ int main(int argc, char *argv[]) {
     /* app.setStyle("windowsvista"); */
 
     KiloWindow window;
+    window.raise();
     window.show();
 
     return app.exec();

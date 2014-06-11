@@ -27,12 +27,12 @@ void FTDIConnection::close() {
         ftdi_free(ftdic);
         ftdic = NULL;
         mode = MODE_NORMAL;
-        emit status("Disconnected.");
+        emit status("disconnected.");
     }
 }
 
 void FTDIConnection::open() {
-    QString status_msg = "Connected.";
+    QString status_msg = "connected.";
     unsigned int chipid;
 
     if (ftdic != NULL) {
@@ -79,7 +79,7 @@ void FTDIConnection::sendCommand(QByteArray cmd) {
         if (ftdi_write_data(ftdic, (unsigned char *)cmd.constData(), cmd.length()) != cmd.length())
             emit error(QString(ftdic->error_str));
     } else {
-        emit error("Cannot send command if disconnected from usb device.");
+        emit error("cannot send command if disconnected from usb device.");
     }
 }
 
@@ -96,7 +96,7 @@ void FTDIConnection::sendProgram(QString file) {
             QMetaObject::invokeMethod(this, "programLoop", Qt::QueuedConnection);
         }
     } else {
-        emit error("Cannot upload program if disconnected from usb device.");
+        emit error("cannot upload program if disconnected from usb device.");
     }
 }
 

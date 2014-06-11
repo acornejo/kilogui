@@ -76,12 +76,12 @@ void SerialConnection::close() {
 #endif
         context = NULL;
         mode = MODE_NORMAL;
-        emit status("Disconnected.");
+        emit status("disconnected.");
     }
 }
 
 void SerialConnection::open() {
-    QString status_msg = "Connected.";
+    QString status_msg = "connected.";
     QString theport = portname;
     if (context != NULL) {
         close();
@@ -99,9 +99,9 @@ void SerialConnection::open() {
     DCB dcbSerialParams = {0};
 
     if (handle == INVALID_HANDLE_VALUE) {
-        status_msg = QString("Unable to open %1").arg(theport);
+        status_msg = QString("unable to open %1. check if device is already in use.").arg(theport);
     } else if (!GetCommState(handle, &dcbSerialParams)) {
-        status_msg = QString("unable to get serial attributes");
+        status_msg = QString("unable to get device attributes");
     } else {
         //Define serial connection parameters for the arduino board
         dcbSerialParams.BaudRate=CBR_38400;
@@ -111,7 +111,7 @@ void SerialConnection::open() {
 
         //Set the parameters and check for their proper application
         if(!SetCommState(handle, &dcbSerialParams))
-            status_msg = QString("unable to set serial attributes");
+            status_msg = QString("unable to set device attributes");
         else {
             context = new HANDLE(handle);
         }
@@ -121,13 +121,13 @@ void SerialConnection::open() {
     struct termios toptions;
 
     if (fd == -1) {
-        status_msg = QString("Unable to open %1").arg(theport);
+        status_msg = QString("unable to open %1. check if device is already in use.").arg(theport);
     } else if (ioctl(fd, TIOCEXCL) == -1) {
-        status_msg = QString("Unable to get exclusive access");
+        status_msg = QString("unable to get exclusive access");
     } else if (fcntl(fd, F_SETFL, 0) == -1) {
-        status_msg = QString("Unable to restore blocking access");
+        status_msg = QString("unable to restore blocking access");
     } else if (tcgetattr(fd, &toptions) < 0) { 
-        status_msg = QString("Unable to get device attributes.");
+        status_msg = QString("unable to get device attributes");
     } else {
         cfsetispeed(&toptions, B38400);
         cfsetospeed(&toptions, B38400);
@@ -154,7 +154,7 @@ void SerialConnection::open() {
     
         tcsetattr(fd, TCSANOW, &toptions);
         if (tcsetattr(fd, TCSAFLUSH, &toptions) < 0) {
-            status_msg = QString("Unable to set device attributes.");
+            status_msg = QString("unable to set device attributes");
         } else {
             tcflush(fd, TCIOFLUSH);
             context = new int(fd);
@@ -172,14 +172,14 @@ void SerialConnection::sendCommand(QByteArray cmd) {
     if (context != NULL) {
 #ifdef _WIN32
         if (!WriteFile(*((HANDLE*)context), cmd.constData(), cmd.length(), &bytes_sent, 0) || bytes_sent != (DWORD)cmd.length())
-            emit error(QString("Unable to send command."));
+            emit error(QString("unable to send command."));
 #else
         if (write(*((int*)context), cmd.constData(), cmd.length()) != cmd.length())
-            emit error(QString("Unable to send command"));
+            emit error(QString("unable to send command"));
         tcdrain(*((int*)context));
 #endif
     } else {
-        emit error("Cannot send command if disconnected from usb device.");
+        emit error("cannot send command if disconnected from usb device.");
     }
 }
 
@@ -196,7 +196,7 @@ void SerialConnection::sendProgram(QString file) {
             QMetaObject::invokeMethod(this, "programLoop", Qt::QueuedConnection);
         }
     } else {
-        emit error("Cannot upload program if disconnected from usb device.");
+        emit error("cannot upload program if disconnected from usb device.");
     }
 }
 
@@ -216,12 +216,12 @@ void SerialConnection::programLoop() {
 #ifdef _WIN32
             if (!WriteFile(*((HANDLE*)context), packet, PACKET_SIZE, &bytes_sent, 0) || bytes_sent != PACKET_SIZE) {
                 mode = MODE_NORMAL;
-                emit error(QString("Unable to send packet."));
+                emit error(QString("unable to send packet."));
             }
 #else
             if (write(*((int*)context), packet, PACKET_SIZE) != PACKET_SIZE) {
                 mode = MODE_NORMAL;
-                emit error(QString("Unable to send packet."));
+                emit error(QString("unable to send packet."));
             }
             tcdrain(*((int*)context));
 #endif
@@ -240,14 +240,14 @@ void SerialConnection::programLoop() {
 #ifdef _WIN32
             if (!WriteFile(*((HANDLE*)context), packet, PACKET_SIZE, &bytes_sent, 0) || bytes_sent != PACKET_SIZE) {
                 mode = MODE_NORMAL;
-                emit error(QString("Unable to send packet."));
+                emit error(QString("unable to send packet."));
             }
             else
                 page++;
 #else
             if (write(*((int*)context), packet, PACKET_SIZE) != PACKET_SIZE) {
                 mode = MODE_NORMAL;
-                emit error(QString("Unable to send packet."));
+                emit error(QString("unable to send packet."));
             }
             else
                 page++;
