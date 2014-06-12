@@ -2,6 +2,7 @@
 #include <QFileDialog>
 #include <QStatusBar>
 #include <QToolButton>
+#include <QComboBox>
 #include <ftdi.h>
 #include "kilowindow.h"
 #include "packet.h"
@@ -54,7 +55,7 @@ KiloWindow::KiloWindow(QWidget *parent): QWidget(parent), device(0), sending(fal
     connect(calib, SIGNAL(calibLeft(int)), this, SLOT(calibLeft(int)));
     connect(calib, SIGNAL(calibRight(int)), this, SLOT(calibRight(int)));
     connect(calib, SIGNAL(calibStraight(int)), this, SLOT(calibStraight(int)));
-    connect(calib, SIGNAL(calibStop()), this, SLOT(stopSending()));
+    connect(calib, SIGNAL(calibStop()), this, SLOT(calibStop()));
     connect(calib, SIGNAL(calibSave()), this, SLOT(calibSave()));
 
     QVBoxLayout *vbox = new QVBoxLayout;
@@ -70,13 +71,6 @@ KiloWindow::KiloWindow(QWidget *parent): QWidget(parent), device(0), sending(fal
     setWindowIcon(QIcon(":/images/kilogui.png"));
     setWindowState(Qt::WindowActive);
 
-    printf("Doing enumeration!\n");
-    QVector<QString> ports = SerialConnection::enumerate();
-    printf("Found %d ports\n", ports.size());
-    for (int i = 0; i < ports.size(); i++) { 
-        printf("%s\n", ports[i].toStdString().c_str());
-    }
-    fflush(stdout);
 
     vusb_conn = new VUSBConnection();
     ftdi_conn = new FTDIConnection();
@@ -107,6 +101,102 @@ KiloWindow::KiloWindow(QWidget *parent): QWidget(parent), device(0), sending(fal
     serial_conn->open();
 }
 
+QGroupBox *KiloWindow::createDeviceSelect() {
+    QGroupBox *box = new QGroupBox("Select Device");
+    QHBoxLayout *hbox = new QHBoxLayout;
+    QRadioButton *ftdi_button = new QRadioButton("FTDI");
+    // QRadioButton *vusb_button = new QRadioButton("VUSB");
+    QRadioButton *serial_button = new QRadioButton("Serial");
+
+    QObject::connect(ftdi_button, SIGNAL(clicked()), this, SLOT(selectFTDI()));
+    // QObject::connect(vusb_button, SIGNAL(clicked()), this, SLOT(selectVUSB()));
+    QObject::connect(serial_button, SIGNAL(clicked()), this, SLOT(selectSerial()));
+
+    hbox->addWidget(ftdi_button);
+    // hbox->addWidget(vusb_button);
+    hbox->addWidget(serial_button);
+    
+    combo = new QComboBox();
+    combo->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
+    QObject::connect(combo, SIGNAL(activated(int)), this, SLOT(setPort(int)));
+    hbox->addWidget(combo);
+
+    combo->setEnabled(false);
+    ftdi_button->setChecked(true);
+
+    // QVector<QString> ports = SerialConnection::enumerate();
+    // if (ports.size() > 0) {
+    //     for (int i = 0; i < ports.size(); i++)
+    //         combo->addItem(QString("%1. %2").arg(i+1).arg(ports[i]), ports[i]);
+    // }
+
+    box->setLayout(hbox);
+
+    return box;
+}
+
+QGroupBox *KiloWindow::createFileInput() {
+    QSignalMapper *mapper = new QSignalMapper(this);
+    QGroupBox *box = new QGroupBox("Upload Program");
+    QGridLayout *layout = new QGridLayout;
+
+    QPushButton *choose_button = new QPushButton("[select file]");
+    QLabel *program_label = new QLabel("Program:");
+    program_label->setBuddy(choose_button);
+    QPushButton *bootload_button = new QPushButton("Bootload");
+    upload_button = new QPushButton("Upload");
+
+    bootload_button->setCheckable(true);
+    upload_button->setCheckable(true);
+    upload_button->setEnabled(false);
+
+    mapper->setMapping(bootload_button, BOOT);
+    QObject::connect(bootload_button, SIGNAL(clicked()), mapper, SLOT(map()));
+    QObject::connect(mapper, SIGNAL(mapped(int)), this, SLOT(sendMessage(int)));
+    QObject::connect(choose_button, SIGNAL(clicked()), this, SLOT(chooseProgramFile()));
+    QObject::connect(upload_button, SIGNAL(clicked()), this, SLOT(uploadProgram()));
+
+    layout->addWidget(program_label, 0, 0);
+    layout->addWidget(choose_button, 0, 1);
+    layout->addWidget(bootload_button, 1, 0, 1, 2);
+    layout->addWidget(upload_button, 2, 0, 1, 2);
+
+    toggle_buttons.push_back(upload_button);
+    toggle_buttons.push_back(bootload_button);
+
+    box->setLayout(layout);
+
+    return box;
+}
+
+QGroupBox *KiloWindow::createCommands() {
+    QGroupBox *box = new QGroupBox("Send Commands");
+    QSignalMapper *mapper = new QSignalMapper(this);
+    QGridLayout *layout = new QGridLayout;
+
+    int split = 2;
+
+    for (int i=0; i<NUM_KILO_COMMANDS; i++) {
+        QPushButton *button = new QPushButton(KILO_COMMANDS[i].name);
+        if (KILO_COMMANDS[i].type != COMMAND_LEDTOGGLE) {
+            button->setCheckable(true);
+        }
+        toggle_buttons.push_back(button);
+        if (i > split) {
+            layout->addWidget(button, i-split-1, 1);
+        } else {
+            layout->addWidget(button, i, 0);
+        }
+        mapper->setMapping(button, (int)KILO_COMMANDS[i].type);
+        QObject::connect(button, SIGNAL(clicked()), mapper, SLOT(map()));
+    }
+    QObject::connect(mapper, SIGNAL(mapped(int)), this, SLOT(sendMessage(int)));
+
+    box->setLayout(layout);
+
+    return box;
+}
+
 void KiloWindow::serialShow() {
     serial->clear();
     serial->show();
@@ -114,6 +204,10 @@ void KiloWindow::serialShow() {
         ftdi_conn->read();
     if (device == 2)
         serial_conn->read();
+}
+
+void KiloWindow::setPort(int idx) {
+    serial_conn->setPort(((QComboBox*)sender())->itemData(idx).toString());
 }
 
 void KiloWindow::calibShow() {
@@ -186,100 +280,27 @@ void KiloWindow::toggleConnection() {
 
 void KiloWindow::selectFTDI() {
     device = 0;
+    combo->setEnabled(false);
     updateStatus();
 }
 
 void KiloWindow::selectVUSB() {
     device = 1;
+    combo->setEnabled(false);
     updateStatus();
 }
 
 void KiloWindow::selectSerial() {
     device = 2;
     updateStatus();
-}
 
-QGroupBox *KiloWindow::createDeviceSelect() {
-    QGroupBox *box = new QGroupBox("Select Device");
-    QHBoxLayout *hbox = new QHBoxLayout;
-    QRadioButton *ftdi_button = new QRadioButton("FTDI");
-    // QRadioButton *vusb_button = new QRadioButton("VUSB");
-    QRadioButton *serial_button = new QRadioButton("Serial");
-
-    QObject::connect(ftdi_button, SIGNAL(clicked()), this, SLOT(selectFTDI()));
-    // QObject::connect(vusb_button, SIGNAL(clicked()), this, SLOT(selectVUSB()));
-    QObject::connect(serial_button, SIGNAL(clicked()), this, SLOT(selectSerial()));
-
-    ftdi_button->setChecked(true);
-
-    hbox->addWidget(ftdi_button);
-    // hbox->addWidget(vusb_button);
-    hbox->addWidget(serial_button);
-    box->setLayout(hbox);
-
-    return box;
-}
-
-QGroupBox *KiloWindow::createFileInput() {
-    QSignalMapper *mapper = new QSignalMapper(this);
-    QGroupBox *box = new QGroupBox("Upload Program");
-    QGridLayout *layout = new QGridLayout;
-
-    QPushButton *choose_button = new QPushButton("[select file]");
-    QLabel *program_label = new QLabel("Program:");
-    program_label->setBuddy(choose_button);
-    QPushButton *bootload_button = new QPushButton("Bootload");
-    upload_button = new QPushButton("Upload");
-
-    bootload_button->setCheckable(true);
-    upload_button->setCheckable(true);
-    upload_button->setEnabled(false);
-
-    mapper->setMapping(bootload_button, BOOT);
-    QObject::connect(bootload_button, SIGNAL(clicked()), mapper, SLOT(map()));
-    QObject::connect(mapper, SIGNAL(mapped(int)), this, SLOT(sendMessage(int)));
-    QObject::connect(choose_button, SIGNAL(clicked()), this, SLOT(chooseProgramFile()));
-    QObject::connect(upload_button, SIGNAL(clicked()), this, SLOT(uploadProgram()));
-
-    layout->addWidget(program_label, 0, 0);
-    layout->addWidget(choose_button, 0, 1);
-    layout->addWidget(bootload_button, 1, 0, 1, 2);
-    layout->addWidget(upload_button, 2, 0, 1, 2);
-
-    toggle_buttons.push_back(upload_button);
-    toggle_buttons.push_back(bootload_button);
-
-    box->setLayout(layout);
-
-    return box;
-}
-
-QGroupBox *KiloWindow::createCommands() {
-    QGroupBox *box = new QGroupBox("Send Commands");
-    QSignalMapper *mapper = new QSignalMapper(this);
-    QGridLayout *layout = new QGridLayout;
-
-    int split = 2;
-
-    for (int i=0; i<NUM_KILO_COMMANDS; i++) {
-        QPushButton *button = new QPushButton(KILO_COMMANDS[i].name);
-        if (KILO_COMMANDS[i].type != COMMAND_LEDTOGGLE) {
-            button->setCheckable(true);
-        }
-        toggle_buttons.push_back(button);
-        if (i > split) {
-            layout->addWidget(button, i-split-1, 1);
-        } else {
-            layout->addWidget(button, i, 0);
-        }
-        mapper->setMapping(button, (int)KILO_COMMANDS[i].type);
-        QObject::connect(button, SIGNAL(clicked()), mapper, SLOT(map()));
-    }
-    QObject::connect(mapper, SIGNAL(mapped(int)), this, SLOT(sendMessage(int)));
-
-    box->setLayout(layout);
-
-    return box;
+     QVector<QString> ports = SerialConnection::enumerate();
+     combo->clear();
+     if (ports.size() > 0) {
+         for (int i = 0; i < ports.size(); i++)
+             combo->addItem(QString("%1. %2").arg(i+1).arg(ports[i]), ports[i]);
+     }
+     combo->setEnabled(true);
 }
 
 void KiloWindow::chooseProgramFile() {
@@ -389,6 +410,13 @@ void KiloWindow::sendDataMessage(uint8_t *payload, uint8_t type) {
         vusb_conn->sendCommand(packet);
     else
         serial_conn->sendCommand(packet);
+}
+
+void KiloWindow::calibStop() {
+    if (sending) {
+        sendMessage(WAKEUP);
+        sendMessage(WAKEUP);
+    }
 }
 
 void KiloWindow::calibSave() {

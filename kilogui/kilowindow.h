@@ -14,7 +14,7 @@ class QGroupBox;
 class QToolButton;
 class QStatusBar;
 class QPushButton;
-class QTimer;
+class QComboBox;
 
 class KiloWindow: public QWidget {
     Q_OBJECT
@@ -42,6 +42,7 @@ private:
     bool sending;
     bool connected;
     QPushButton *upload_button, *serial_button, *calib_button;
+    QComboBox *combo;
     QList<QPushButton*> toggle_buttons;
     void updateStatus();
 
@@ -61,12 +62,14 @@ private slots:
     void sendDataMessage(uint8_t *, uint8_t);
     void serialShow();
     void calibShow();
+    void setPort(int);
 
     void calibUID(int);
     void calibLeft(int);
     void calibRight(int);
     void calibStraight(int);
     void calibSave();
+    void calibStop();
 };
 
 #endif//KILOWINDOW_H

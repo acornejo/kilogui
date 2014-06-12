@@ -22,6 +22,8 @@ private:
 public:
     SerialConnection(QObject *p=0, QString="");
     static QVector<QString> enumerate();
+    void setPort(QString);
+    QString getPort() const;
 
 signals:
     void readText(QString);
@@ -29,7 +31,6 @@ signals:
     void error(QString);
 
 public slots:
-    void setPort(QString);
     void sendCommand(QByteArray);
     void sendProgram(QString);
     void open();

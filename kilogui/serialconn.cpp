@@ -53,9 +53,16 @@ QVector<QString> SerialConnection::enumerate() {
     return ports;
 }
 
+QString SerialConnection::getPort() const {
+    return portname;
+}
+
 void SerialConnection::setPort(QString _portname) {
-    portname = _portname;
-    open();
+    if (_portname.compare(portname) != 0) {
+        portname = _portname;
+        close();
+        open();
+    }
 }
 
 void SerialConnection::read() {
@@ -91,6 +98,9 @@ void SerialConnection::open() {
         QVector<QString> ports = enumerate();
         if (ports.size() > 0) {
             theport = ports[0];
+        } else {
+            emit status("no serial port found");
+            return;
         }
     }
 
