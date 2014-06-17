@@ -19,9 +19,9 @@ static calibmsg_t msg;
 
 static const kilo_cmd_t KILO_COMMANDS[] = {
     {"Reset", RESET},
-    {"Sleep", SLEEP},
     {"Run", RUN},
     {"Pause", WAKEUP},
+    {"Sleep", SLEEP},
     {"Voltage", VOLTAGE},
     {"LedToggle", COMMAND_LEDTOGGLE}
 };
