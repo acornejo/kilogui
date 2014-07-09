@@ -188,6 +188,7 @@ QGroupBox *KiloWindow::createCommands() {
             layout->addWidget(button, i, 0);
         }
         mapper->setMapping(button, (int)KILO_COMMANDS[i].type);
+        QObject::connect(button, SIGNAL(pressed()), this, SLOT(stopSending()));
         QObject::connect(button, SIGNAL(clicked()), mapper, SLOT(map()));
     }
     QObject::connect(mapper, SIGNAL(mapped(int)), this, SLOT(sendMessage(int)));
@@ -363,7 +364,6 @@ void KiloWindow::sendMessage(int type_int) {
     } else  {
         if (sending) {
             stopSending();
-            return;
         }
 
         if (type == COMMAND_LEDTOGGLE) {
