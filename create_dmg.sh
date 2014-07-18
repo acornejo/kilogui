@@ -4,6 +4,15 @@ VOLNAME=KiloGUI
 DMGNAME=kilogui.dmg
 SIZE=20M
 
+if [ "$(uname)" != "Darwin" ]; then
+    echo "Must use OSX to create DMG."
+fi
+
+rm -fR kilogui.app
+qmake
+make
+macdeployqt kilogui.app
+
 rm -fR $DMG
 rm -f pack.temp.dmg
 rm -f $DMGNAME
