@@ -1,0 +1,10 @@
+[Desktop Entry]
+name=KiloGUI
+Comment=Kilobot Controller
+Exec=kilogui
+Terminal=false
+Type=Application
+StartupNotify=true
+Icon=kilogui
+Categories=GNOME;GTK;Utilities
+MimeType=application/vnd.hex
