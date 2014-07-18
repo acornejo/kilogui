@@ -11,15 +11,15 @@ fi
 rm -fR kilogui.app
 qmake
 make
-macdeployqt kilogui.app
+macdeployqt src/kilogui.app
 
 rm -fR $DMG
 rm -f pack.temp.dmg
 rm -f $DMGNAME
 mkdir -p $DMG
 mkdir -p $DMG/.background
-cp images/background.png $DMG/.background
-cp -a kilogui.app $DMG/kilogui.app
+cp src/images/background.png $DMG/.background
+cp -a src/kilogui.app $DMG/kilogui.app
 
 osascript<<END
 tell application "Finder"
