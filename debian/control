@@ -1,0 +1,14 @@
+Source: kilogui
+Section: unknown
+Priority: extra
+Maintainer: Alex Cornejo <acornejo@gmail.com>
+Build-Depends: debhelper (>= 8.0.0), libqt4-dev (>= 4:4.8), libftdi-dev (>= 0.20)
+Standards-Version: 3.9.4
+Homepage: https://github.com/acornejo/kilogui
+Vcs-Git: https://github.com/acornejo/kilogui
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/kilogui.git;a=summary
+
+Package: kilogui
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Graphical front-end to program and control the kilobots via the overhead controller. 

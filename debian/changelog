@@ -1,0 +1,5 @@
+kilogui (1.0-1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- Alex Cornejo <acornejo@gmail.com>  Fri, 18 Jul 2014 12:34:15 -0400
