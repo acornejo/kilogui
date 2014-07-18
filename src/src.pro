@@ -28,13 +28,19 @@ unix {
 
   #MAKE INSTALL
 
-  INSTALLS += target desktop icon64
+  INSTALLS += target desktop icon48 icon64 icon128
 
   target.path =$$BINDIR
 
-  desktop.path = $$DATADIR/applications/hildon
+  desktop.path = $$DATADIR/applications
   desktop.files += $${TARGET}.desktop
 
+  icon48.path = $$DATADIR/icons/hicolor/48x48/apps
+  icon48.files += images/48x48/kilogui.png
+
   icon64.path = $$DATADIR/icons/hicolor/64x64/apps
-  icon64.files += ../data/64x64/$${TARGET}.png
+  icon64.files += images/64x64/kilogui.png
+
+  icon128.path = $$DATADIR/icons/hicolor/128x128/apps
+  icon128.files += images/128x128/kilogui.png
 }
