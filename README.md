@@ -2,12 +2,21 @@
 
 Graphical front-end to program and control the kilobots via the overhead controller.
 
-* Binaries for Windows 32 bit [here][kilogui-binary].
-* Binaries for OS X 10.8.2 [here][kilogui-binaryosx]
+## Windows Binaries
+Download [here][kilogui-binarywin32].
+![kilogui-win32](https://raw.github.com/acornejo/kilogui/docs/gui-win32.png "kilogui win32 screenshot")
 
-![kilogui-win32](https://raw.github.com/acornejo/kilobots-toolchain/docs/gui-win32.png "kilogui win32 screenshot")
-![kilogui-osx](https://raw.github.com/acornejo/kilobots-toolchain/docs/gui-osx.png "kilogui osx screenshot")
-![kilogui-linux](https://raw.github.com/acornejo/kilobots-toolchain/docs/gui-linux.png "kilogui linux screenshot")
+## OS X 10.9 Binaries
+Download [here][kilogui-binaryosx]
 
-[kilogui-binary]:https://github.com/acornejo/kilobots-toolchain/raw/binaries/kilogui-i586-win32.zip 
-[kilogui-binaryosx]:https://github.com/acornejo/kilobots-toolchain/raw/binaries/kilogui.dmg 
+![kilogui-osx](https://raw.github.com/acornejo/kilogui/docs/gui-osx.png "kilogui osx screenshot")
+
+## Debian Binaries
+
+Download [amd64][kilogui-binarydeb64]
+
+![kilogui-linux](https://raw.github.com/acornejo/kilogui/docs/gui-linux.png "kilogui linux screenshot")
+
+[kilogui-binarywin32]:https://github.com/acornejo/kilogui/releases/download/v0.1/kilogui-win32.zip
+[kilogui-binaryosx]:https://github.com/acornejo/kilogui/releases/download/v0.1/kilogui-osx.dmg
+[kilogui-binarydeb64]:https://github.com/acornejo/kilogui/releases/download/v0.1/kilogui_1.0-1_amd64.deb
