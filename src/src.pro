@@ -15,3 +15,26 @@ mystaticconfig {
     QMAKE_LIBS_QT_THREAD =
     LIBS += $(QTDIR)/lib/libqt.a -lz -framework Carbon
 }
+
+unix {
+  #VARIABLES
+  isEmpty(PREFIX) {
+    PREFIX = /usr
+  }
+  BINDIR = $$PREFIX/bin
+  DATADIR =$$PREFIX/share
+
+  DEFINES += DATADIR=\\\"$$DATADIR\\\" PKGDATADIR=\\\"$$PKGDATADIR\\\"
+
+  #MAKE INSTALL
+
+  INSTALLS += target desktop icon64
+
+  target.path =$$BINDIR
+
+  desktop.path = $$DATADIR/applications/hildon
+  desktop.files += $${TARGET}.desktop
+
+  icon64.path = $$DATADIR/icons/hicolor/64x64/apps
+  icon64.files += ../data/64x64/$${TARGET}.png
+}
