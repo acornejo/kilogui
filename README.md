@@ -1,5 +1,5 @@
-KiloGUI
--------
+# KiloGUI
+
 Graphical front-end to program and control the kilobots via the overhead controller.
 
 * Binaries for Windows 32 bit [here][kilogui-binary].
