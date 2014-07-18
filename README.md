@@ -1,6 +1,8 @@
 # KiloGUI
 
-Graphical front-end to program and control the kilobots via the overhead controller.
+Graphical front-end to program and control the Kilobots via the overhead controller. Use in conjunction with the latest Kilolib firmware, available [here](https://github.com/acornejo/kilolib). 
+
+The latest version of KiloGUI is available for download [here](https://github.com/acornejo/kilogui/releases).
 
 ## Windows Binaries
 Download [here][kilogui-binarywin32].
