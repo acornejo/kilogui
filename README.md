@@ -17,7 +17,7 @@ Download [here][kilogui-binaryosx]
 
 Download [amd64][kilogui-binarydeb64]
 
-![kilogui-linux](https://raw.github.com/acornejo/kilogui/docs/gui-linux.png "kilogui linux screenshot")
+![kilogui-linux](https://raw.github.com/acornejo/kilogui/docs/gui-linux.png "kilogui Linux screenshot")
 
 [kilogui-binarywin32]:https://github.com/acornejo/kilogui/releases/download/v0.1/kilogui-win32.zip
 [kilogui-binaryosx]:https://github.com/acornejo/kilogui/releases/download/v0.1/kilogui-osx.dmg
