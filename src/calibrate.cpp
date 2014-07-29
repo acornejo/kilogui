@@ -21,7 +21,7 @@ CalibWindow::CalibWindow(QString title, QWidget *parent): QWidget(parent) {
 
     QLabel *uid_label = new QLabel("Unique ID");
     QSpinBox *uid_input = new QSpinBox();
-    uid_input->setRange(0,2048);
+    uid_input->setRange(0,65536);
     uid_input->setSingleStep(1);
     QPushButton *uid_button = new QPushButton("Test");
 

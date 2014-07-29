@@ -105,11 +105,14 @@ void SerialConnection::open() {
     }
 
 #ifdef _WIN32
-    HANDLE handle = CreateFile(theport.toStdWString().c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    DCB dcbSerialParams = {0};
+    QString comname = QString("\\\\.\\") + theport;
+    wchar_t comstr[512];
+    memcpy(comstr, comname.toStdWString().c_str(), sizeof(wchar_t)*comname.toStdWString().size());
+    HANDLE handle = CreateFile(comstr, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    DCB dcbSerialParams = DCB();
 
     if (handle == INVALID_HANDLE_VALUE) {
-        status_msg = QString("unable to open %1. check if device is already in use.").arg(theport);
+        status_msg = QString("unable to open %1, last error %2.").arg(theport).arg(GetLastError());
     } else if (!GetCommState(handle, &dcbSerialParams)) {
         status_msg = QString("unable to get device attributes");
     } else {
