@@ -15,8 +15,6 @@ typedef struct {
 #define COMMAND_STOP 250
 #define COMMAND_LEDTOGGLE 251
 
-static calibmsg_t msg;
-
 static const kilo_cmd_t KILO_COMMANDS[] = {
     {"Reset", RESET},
     {"Run", RUN},
@@ -404,6 +402,7 @@ void KiloWindow::sendDataMessage(uint8_t *payload, uint8_t type) {
     packet[PACKET_SIZE-1] = checksum;
     sending = true;
 
+
     if (device == 0)
         ftdi_conn->sendCommand(packet);
     else if (device == 1)
@@ -420,25 +419,30 @@ void KiloWindow::calibStop() {
 }
 
 void KiloWindow::calibSave() {
+    static calibmsg_t msg;
     msg.mode = CALIB_SAVE;
     sendDataMessage((uint8_t*)&msg, CALIB);
 }
 void KiloWindow::calibUID(int x) { 
+    static calibmsg_t msg;
     msg.mode = CALIB_UID;
     msg.uid = x;
     sendDataMessage((uint8_t *)&msg, CALIB);
 }
 void KiloWindow::calibLeft(int x) {
+    static calibmsg_t msg;
     msg.mode = CALIB_TURN_LEFT;
     msg.turn_left = x;
     sendDataMessage((uint8_t *)&msg, CALIB);
 }
 void KiloWindow::calibRight(int x) {
+    static calibmsg_t msg;
     msg.mode = CALIB_TURN_RIGHT;
     msg.turn_right = x;
     sendDataMessage((uint8_t *)&msg, CALIB);
 }
 void KiloWindow::calibStraight(int x) {
+    static calibmsg_t msg;
     msg.mode = CALIB_STRAIGHT;
     msg.straight_left = x&0xFF;
     msg.straight_right = (x>>8) & 0xFF;

@@ -35,6 +35,7 @@ enum {
     CALIB_STRAIGHT
 };
 
+#pragma pack(1)
 typedef  struct  __attribute__((__packed__)) {
     uint8_t mode;
     uint16_t uid;
