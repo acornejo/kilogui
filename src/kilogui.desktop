@@ -1,5 +1,5 @@
 [Desktop Entry]
-name=KiloGUI
+Name=KiloGUI
 Comment=Kilobot Controller
 Exec=kilogui
 Terminal=false
